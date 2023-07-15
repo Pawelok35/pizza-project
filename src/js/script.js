@@ -65,6 +65,7 @@
       thisProduct.getElements();
       thisProduct.initAccordion();
       thisProduct.initOrderForm();
+      thisProduct.initAmountWidget();
       thisProduct.processOrder();
       // console.log('new Product:', thisProduct);
     }
@@ -97,6 +98,9 @@
 
       thisProduct.imageWrapper = thisProduct.element.querySelector(
         select.menuProduct.imageWrapper
+      );
+      thisProduct.amountWidgetElem = thisProduct.element.querySelector(
+        select.menuProduct.amountWidget
       );
     }
 
@@ -187,14 +191,16 @@
           }
 
           const optionImage = thisProduct.imageWrapper.querySelector(
-            `.${paramId}-${optionId}`
+            `.${paramId}-${optionId}` // searching image elements by class - class = paramId-optionId "toppings-olives"
           );
           if (optionImage) {
+            //if optionImagine was found,
             if (optionSelected) {
-              // add class to optionImage
+              // check if option was chosen
+              // if YES add class to optionImage
               optionImage.classList.add(classNames.menuProduct.imageVisible);
             } else {
-              // remove class from optionImage
+              // if NO remove class from optionImage
               optionImage.classList.remove(classNames.menuProduct.imageVisible);
             }
           }
@@ -204,7 +210,72 @@
       // update calculated price in the HTML
       thisProduct.priceElem.innerHTML = price;
     }
+    initAmountWidget() {
+      const thisProduct = this;
+      thisProduct.amountWidget = new AmountWidget(thisProduct.amountWidgetElem);
+    }
   }
+
+  class AmountWidget {
+    constructor(element) {
+      const thisWidget = this;
+
+      console.log('AmountWidget: ', thisWidget);
+      console.log('constructor arguments: ', element);
+
+      thisWidget.getElements(element);
+      thisWidget.setValue(thisWidget.input.value);
+      thisWidget.initAction(thisWidget.input.element);
+    }
+
+    getElements(element) {
+      const thisWidget = this;
+
+      thisWidget.element = element;
+      thisWidget.input = thisWidget.element.querySelector(
+        select.widgets.amount.input
+      );
+      thisWidget.linkDecrease = thisWidget.element.querySelector(
+        select.widgets.amount.linkDecrease
+      );
+      thisWidget.linkIncrease = thisWidget.element.querySelector(
+        select.widgets.amount.linkIncrease
+      );
+    }
+
+    setValue(value) {
+      const thisWidget = this; // zmienna lokalna ktora odnosi sie do biezacej instacji klasy AmountWidget
+
+      const newValue = parseInt(value); // zmienna ktora przechowuje wartosc przekazana do metody setValue, przekonwertowana na liczbe calkowita ze wzgledu ze kazdy input to string
+
+      if (thisWidget.value !== newValue && !isNaN(newValue)) { // NaN not a number
+        if (newValue >= settings.amountWidget.defaultMin && newValue <= settings.amountWidget.defaultMax) {
+          thisWidget.value = newValue;
+        }
+      }
+  
+      thisWidget.input.value = thisWidget.value;
+    }
+
+    initAction() {
+      const thisWidget = this;
+
+      thisWidget.input.addEventListener('change', function () {
+        thisWidget.setValue(this.value);
+      });
+
+      thisWidget.linkDecrease.addEventListener('click', function (event) {
+        event.preventDefault();
+        thisWidget.setValue(thisWidget.value - 1);
+      });
+
+      thisWidget.linkIncrease.addEventListener('click', function (event) {
+        event.preventDefault();
+        thisWidget.setValue(thisWidget.value + 1);
+      });
+    }
+  }
+  
 
   const app = {
     initMenu: function () {
