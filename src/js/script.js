@@ -43,8 +43,8 @@
   const settings = {
     amountWidget: {
       defaultValue: 1,
-      defaultMin: 1,
-      defaultMax: 9,
+      defaultMin: 0,
+      defaultMax: 10,
     },
   };
 
@@ -208,11 +208,16 @@
       }
 
       // update calculated price in the HTML
+      price *= thisProduct.amountWidget.value;
       thisProduct.priceElem.innerHTML = price;
     }
     initAmountWidget() {
       const thisProduct = this;
       thisProduct.amountWidget = new AmountWidget(thisProduct.amountWidgetElem);
+
+      thisProduct.amountWidgetElem.addEventListener('updated', function () {
+        thisProduct.processOrder();
+      });
     }
   }
 
@@ -248,13 +253,18 @@
 
       const newValue = parseInt(value); // zmienna ktora przechowuje wartosc przekazana do metody setValue, przekonwertowana na liczbe calkowita ze wzgledu ze kazdy input to string
 
-      if (thisWidget.value !== newValue && !isNaN(newValue)) { // NaN not a number
-        if (newValue >= settings.amountWidget.defaultMin && newValue <= settings.amountWidget.defaultMax) {
+      if (thisWidget.value !== newValue && !isNaN(newValue)) {
+        // NaN not a number
+        if (
+          newValue >= settings.amountWidget.defaultMin &&
+          newValue <= settings.amountWidget.defaultMax
+        ) {
           thisWidget.value = newValue;
         }
       }
-  
+
       thisWidget.input.value = thisWidget.value;
+      thisWidget.announce();
     }
 
     initAction() {
@@ -274,8 +284,14 @@
         thisWidget.setValue(thisWidget.value + 1);
       });
     }
+
+    announce() {
+      const thisWidget = this;
+
+      const event = new Event('updated');
+      thisWidget.element.dispatchEvent(event);
+    }
   }
-  
 
   const app = {
     initMenu: function () {
