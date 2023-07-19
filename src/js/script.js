@@ -267,7 +267,7 @@
       console.log('constructor arguments: ', element);
 
       thisWidget.getElements(element);
-      thisWidget.setValue(thisWidget.input.value);
+      thisWidget.setValue(settings.amountWidget.defaultValue);
       thisWidget.initAction(thisWidget.input.element);
     }
 
@@ -393,7 +393,7 @@
     initCart: function () {
       const thisApp = this;
 
-      const cartElem = -document.querySelector(select.containerOf.cart);
+      const cartElem = document.querySelector(select.containerOf.cart);
       thisApp.cart = new Cart(cartElem);
     },
   };
