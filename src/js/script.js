@@ -2,7 +2,7 @@
 
 {
   ('use strict');
-
+// 
   const select = {
     templateOf: {
       menuProduct: '#template-menu-product',
@@ -67,6 +67,7 @@
     // CODE ADDED END
   };
 
+// Obiekt settings zawiera wlasciwosc 'amountWidget', ktora jest kolejnym obiektem posiadajacym trzy klucze o wartosciach odpowiednie 1, 1, 9  
   const settings = {
     amountWidget: {
       defaultValue: 1,
@@ -81,9 +82,10 @@
   };
 
   const templates = {
+// Wlasciwosc o nazwie/key menuProduct i wartosci/value -> zawiera skompilowany szablon Handlebars
     menuProduct: Handlebars.compile(
-      document.querySelector(select.templateOf.menuProduct).innerHTML
-    ),
+      document.querySelector(select.templateOf.menuProduct).innerHTML  // argument przekazuje tresc HTML znajdujacy sie w elemencie o selektorze select.templateOf.menuProduct).innerHTML
+    ),                              //document.querySelector(select.templateOf.menuProduct).innerHTML -> pobiera zawartosc HTML szablonu, ktory jest juz obecny na stronie
     // CODE ADDED START
     cartProduct: Handlebars.compile(
       document.querySelector(select.templateOf.cartProduct).innerHTML
@@ -92,15 +94,17 @@
   };
 
   class Product {
+// Konstruktor klasy     
     constructor(id, data) {
       const thisProduct = this;
-//Przypisanie argumentów konstruktora do własciwosci obiektu this.Produkt
+
+//Przypisanie argumentów konstruktora do własciwosci obiektu this.Product
       thisProduct.id = id;
       thisProduct.data = data;
 
-// Wywolanie roznych  metod / funkcji inicjalizujacych funkcjonalnosc produktu
-      thisProduct.renderInMenu();
-      thisProduct.getElements();
+// Wywolanie roznych  metod inicjalizujacych funkcjonalnosc produktu
+      thisProduct.renderInMenu();  // utworzenie thisProduct.element
+      thisProduct.getElements();  // utworzenie akordeonu, dostep do: formularza, wskazanie wszystkich inputow i selectow,  do ceny produktu, do kontener do obrazow produktu, do widget ilosci produktu
       thisProduct.initAccordion();
       thisProduct.initOrderForm();
       thisProduct.initAmountWidget();
@@ -111,38 +115,47 @@
 // Metoda ktora renderuje produkt w menu aplikacji lub na stronie
     renderInMenu() {
       const thisProduct = this;
-      const generatedHTML = templates.menuProduct(thisProduct.data);
-      thisProduct.element = utils.createDOMFromHTML(generatedHTML);
-      const menuContainer = document.querySelector(select.containerOf.menu);
-      menuContainer.appendChild(thisProduct.element);
+
+      const generatedHTML = templates.menuProduct(thisProduct.data);  // Uzycie wlasciwosci('menuProduct') obiektu 'templates' w ktorej argumentem jest 'thisProduct.data'-> Przy wywolaniu 'templates.menuProduct' przekazuje dane z obiektu 'thisProduct.data' jako ARGUMENT | 
+      //kompilacja szablonu Handlebars 'menuProduct' podajac mu dane z obiektu 'thisProduct.data'w wyniku otrzymuje WYGENEROWANY KOD HTML dla danego produktu ktory jest PRZECHOWYWANY W ZMIENNEJ 'generatedHTML'
+      
+      thisProduct.element = utils.createDOMFromHTML(generatedHTML); // funkcja utilis w ktorej argumentem jest 'generatedHTML' | wygenerowany kod HTML jest zamieniany przez funkcje utilis... na element DOM czyli obiekt JS i jest przechowywany we wlasciwosci obiektu thisProduct - thisProduct.element
+
+      const menuContainer = document.querySelector(select.containerOf.menu);  // uzywajac metody document... znajduje element na stronie HTML ktory jest okreslony przez selector: select.containerOf.menu.
+      //selector ten odnosi sie do kontenera menu w ktorym chce wyswietlic produkty. selector zapisany w stalej select.
+
+      menuContainer.appendChild(thisProduct.element); //wywoluje metode appendChild na elemencie menuContainer, dodaje wygenerowany element produktu(thisProduct.element) na koncu do kontenera 'menuContainer'
+      //kod znajduje odpowiedni kontener menu na stronie, a nastepnie dodaje do niego wygenerowany element produktu, ktory zostal wczesniej utworzony i przechowywany w thisProduct.element. Dzieki temu produkt jest wyswietlany w menu i jest gotowy do interakcji z uzytkownikiem.
     }
 
-// Metoda ktora pobiera i zapisuje referencje do roznych elementow HTML reprezentujacych produkt (np przyciski, pola fromularza)   
+// Metoda ktora pobiera i zapisuje referencje do roznych elementow HTML reprezentujacych produkt (np przyciski, pola fromularza) / metoda ma na celu zlokalzowanie i przypisanie do wlasciwego obiektu 'thisProduct' roznych elementow DOM ktore sa zwiazane z konkretnym produktem na stronie.  
     getElements() {
-      const thisProduct = this;
+      const thisProduct = this;  // umozliwia to odwolanie sie do biezacej instancji uzywajac krotszej nazwy 'thisProduct'
 
-      thisProduct.accordionTrigger = thisProduct.element.querySelector(
-        select.menuProduct.clickable
+    
+    // tworzenie wlasciowsci INSTANCJI klasy Product - argumenty przekazywane do konstruktora podczas tworzenia instancji
+      thisProduct.accordionTrigger = thisProduct.element.querySelector( //accordionTrigger - wlasciwosc obiektu 'thisProduct' i = przypisana do niej wartosc ktora jest wyszukiwana za opmoca querySelector
+        select.menuProduct.clickable   // selektor ktory odnosi sie do odpowiedniego elementu (np. przycisk lub naglowek produktu), ktory pozwala na rozwijanie i zwijanie informacji na temat produktu.  
       );
-      thisProduct.form = thisProduct.element.querySelector(
-        select.menuProduct.form
+      thisProduct.form = thisProduct.element.querySelector(  //wewnatrz thisProduct.element wyszukuje za pomoca selektora...
+        select.menuProduct.form // selektor wyszukujacy i wskazuje na element HTML np formularza produktu
       );
-      thisProduct.formInputs = thisProduct.form.querySelectorAll(
+      thisProduct.formInputs = thisProduct.form.querySelectorAll(  //wskazanie wszystkich inputow i selectow w formularzu (thisProduct.form)
         select.all.formInputs
       );
-      thisProduct.cartButton = thisProduct.element.querySelector(
-        select.menuProduct.cartButton
+      thisProduct.cartButton = thisProduct.element.querySelector(  // wyszukanie w thisProduct.element selectora odpowiedzialnego za button
+        select.menuProduct.cartButton  // wskazuje na przycisk koszyka
       );
 
-      thisProduct.priceElem = thisProduct.element.querySelector(
-        select.menuProduct.priceElem
+      thisProduct.priceElem = thisProduct.element.querySelector(  // tworze wlasciwosc w ktorej przechowuje element DOM znaleziony w obrebie thisProduct.element
+        select.menuProduct.priceElem  // wyswietla cene produktuna stronie
       );
 
-      thisProduct.imageWrapper = thisProduct.element.querySelector(
-        select.menuProduct.imageWrapper
+      thisProduct.imageWrapper = thisProduct.element.querySelector(  // tworze wlasciwosc w ktorej przechowuje element DOM znaleziony w obrebie thisProduct.element
+        select.menuProduct.imageWrapper  // reprezentuje kontener do obrazow produktu
       );
-      thisProduct.amountWidgetElem = thisProduct.element.querySelector(
-        select.menuProduct.amountWidget
+      thisProduct.amountWidgetElem = thisProduct.element.querySelector(  // tworze wlasciwosc w ktorej przechowuje element DOM znaleziony w obrebie thisProduct.element
+        select.menuProduct.amountWidget  // reprezentuje widget ilosci produktu
       );
     }
 
@@ -411,3 +424,5 @@
 
   app.init();
 }
+
+
