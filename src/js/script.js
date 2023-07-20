@@ -3,7 +3,7 @@
 {
   ('use strict');
 // 
-  const select = {
+  const select = {  // obiekt o nazwie select w ktorym jest kolejny obiekt(wlasciwosc select) ktory ma 2 wlasciwosci
     templateOf: {
       menuProduct: '#template-menu-product',
       cartProduct: '#template-cart-product', // CODE ADDED
@@ -96,7 +96,7 @@
   class Product {
 // Konstruktor klasy     
     constructor(id, data) {
-      const thisProduct = this;
+      const thisProduct = this;  // odniesienie do bierzacej instancji klasy
 
 //Przypisanie argumentów konstruktora do własciwosci obiektu this.Product
       thisProduct.id = id;
@@ -116,25 +116,30 @@
     renderInMenu() {
       const thisProduct = this;
 
+//Znajsuje wybrany kod HTML      
       const generatedHTML = templates.menuProduct(thisProduct.data);  // Uzycie wlasciwosci('menuProduct') obiektu 'templates' w ktorej argumentem jest 'thisProduct.data'-> Przy wywolaniu 'templates.menuProduct' przekazuje dane z obiektu 'thisProduct.data' jako ARGUMENT | 
       //kompilacja szablonu Handlebars 'menuProduct' podajac mu dane z obiektu 'thisProduct.data'w wyniku otrzymuje WYGENEROWANY KOD HTML dla danego produktu ktory jest PRZECHOWYWANY W ZMIENNEJ 'generatedHTML'
       
-      thisProduct.element = utils.createDOMFromHTML(generatedHTML); // funkcja utilis w ktorej argumentem jest 'generatedHTML' | wygenerowany kod HTML jest zamieniany przez funkcje utilis... na element DOM czyli obiekt JS i jest przechowywany we wlasciwosci obiektu thisProduct - thisProduct.element
+// Kod HTML z punktu wyzej konwerteruje na element DOM czyli obiekt JS      
+      thisProduct.element = utils.createDOMFromHTML(generatedHTML); // tworze wlasciwosc 'element' dla bierzacej instancji klasy za pomoca funkcji utilis w ktorej argumentem jest 'generatedHTML' | wygenerowany kod HTML jest zamieniany przez funkcje utilis... na element DOM czyli obiekt JS i jest przechowywany we wlasciwosci obiektu thisProduct - thisProduct.element
 
+// szukam w document kontenera menu      
       const menuContainer = document.querySelector(select.containerOf.menu);  // uzywajac metody document... znajduje element na stronie HTML ktory jest okreslony przez selector: select.containerOf.menu.
       //selector ten odnosi sie do kontenera menu w ktorym chce wyswietlic produkty. selector zapisany w stalej select.
 
+// dodaje na koniec kontenera menu (ktory znalazlem wyzej) (jako dziecko/child) z konwertowany kod HTML na element DOM (z punktu wyzej)      
       menuContainer.appendChild(thisProduct.element); //wywoluje metode appendChild na elemencie menuContainer, dodaje wygenerowany element produktu(thisProduct.element) na koncu do kontenera 'menuContainer'
       //kod znajduje odpowiedni kontener menu na stronie, a nastepnie dodaje do niego wygenerowany element produktu, ktory zostal wczesniej utworzony i przechowywany w thisProduct.element. Dzieki temu produkt jest wyswietlany w menu i jest gotowy do interakcji z uzytkownikiem.
     }
 
-// Metoda ktora pobiera i zapisuje referencje do roznych elementow HTML reprezentujacych produkt (np przyciski, pola fromularza) / metoda ma na celu zlokalzowanie i przypisanie do wlasciwego obiektu 'thisProduct' roznych elementow DOM ktore sa zwiazane z konkretnym produktem na stronie.  
+// Metoda ktora pobiera i zapisuje referencje do roznych elementow HTML reprezentujacych produkt (np przyciski, pola fromularza)
+// Metoda ma na celu zlokalzowanie i przypisanie do wlasciwego obiektu 'thisProduct' roznych elementow DOM ktore sa zwiazane z konkretnym produktem na stronie.   
     getElements() {
       const thisProduct = this;  // umozliwia to odwolanie sie do biezacej instancji uzywajac krotszej nazwy 'thisProduct'
 
     
     // tworzenie wlasciowsci INSTANCJI klasy Product - argumenty przekazywane do konstruktora podczas tworzenia instancji
-      thisProduct.accordionTrigger = thisProduct.element.querySelector( //accordionTrigger - wlasciwosc obiektu 'thisProduct' i = przypisana do niej wartosc ktora jest wyszukiwana za opmoca querySelector
+      thisProduct.accordionTrigger = thisProduct.element.querySelector( //accordionTrigger - wlasciwosc obiektu 'thisProduct' i = przypisana do niej wartosc ktora jest wyszukiwana za pomoca querySelector w obrebie thisProduct.element
         select.menuProduct.clickable   // selektor ktory odnosi sie do odpowiedniego elementu (np. przycisk lub naglowek produktu), ktory pozwala na rozwijanie i zwijanie informacji na temat produktu.  
       );
       thisProduct.form = thisProduct.element.querySelector(  //wewnatrz thisProduct.element wyszukuje za pomoca selektora...
