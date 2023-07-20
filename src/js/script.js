@@ -94,10 +94,11 @@
   class Product {
     constructor(id, data) {
       const thisProduct = this;
-
+//Przypisanie argumentów konstruktora do własciwosci obiektu this.Produkt
       thisProduct.id = id;
       thisProduct.data = data;
 
+// Wywolanie roznych  metod / funkcji inicjalizujacych funkcjonalnosc produktu
       thisProduct.renderInMenu();
       thisProduct.getElements();
       thisProduct.initAccordion();
@@ -107,6 +108,7 @@
       // console.log('new Product:', thisProduct);
     }
 
+// Metoda ktora renderuje produkt w menu aplikacji lub na stronie
     renderInMenu() {
       const thisProduct = this;
       const generatedHTML = templates.menuProduct(thisProduct.data);
@@ -114,6 +116,8 @@
       const menuContainer = document.querySelector(select.containerOf.menu);
       menuContainer.appendChild(thisProduct.element);
     }
+
+// Metoda ktora pobiera i zapisuje referencje do roznych elementow HTML reprezentujacych produkt (np przyciski, pola fromularza)   
     getElements() {
       const thisProduct = this;
 
@@ -142,6 +146,7 @@
       );
     }
 
+// Metoda ktora inicjalizuje akordeon dla produktu, jesli taki istnieje. Akordeon jest rodzajem interaktywnego komponentu, ktory pozwala na rozwijanie i zwijanie sekcji na stronie.    
     initAccordion() {
       const thisProduct = this;
 
@@ -167,6 +172,8 @@
         thisProduct.element.classList.toggle('active');
       });
     }
+   
+// Metoda ktora inicjalizuje formularz zamowienia dla produktu. Moze to obejmowac walidacje danych, obsługe wyborow opcji produktu itp.   
     initOrderForm() {
       const thisProduct = this;
       //console.log(thisProduct);
@@ -186,6 +193,8 @@
         thisProduct.processOrder();
       });
     }
+    
+//  WYWOLANIE METODY ktora przetwarza zamowienie produktu, czyli oblicza cene, wybrane opcje itp. 
     processOrder() {
       const thisProduct = this;
       //console.log(thisProduct);
@@ -249,6 +258,8 @@
       price *= thisProduct.amountWidget.value;
       thisProduct.priceElem.innerHTML = price;
     }
+
+// Metoda ktora inicjalizuje widget do wybierania ilosci produktu. Widget ten moze umożliwiac uzytkownikowi wybieranie liczby sztuk produktu, jakie chce zamowic.    
     initAmountWidget() {
       const thisProduct = this;
       thisProduct.amountWidget = new AmountWidget(thisProduct.amountWidgetElem);
