@@ -289,60 +289,64 @@
       const thisWidget = this;
 
       console.log('AmountWidget: ', thisWidget);        // Wyswietla informacje o biezacej instancji klasy AmountWidget w konsoli przegladarki.
-      console.log('constructor arguments: ', element);  //  Wyswietla argumenty przekazane do konstruktora w konsoli przegladarki.
+      console.log('constructor arguments: ', element);  // Wyswietla argumenty przekazane do konstruktora w konsoli przegladarki.
 
-      thisWidget.getElements(element);
-      thisWidget.setValue(settings.amountWidget.defaultValue);
-      thisWidget.initAction(thisWidget.input.element);
+      thisWidget.getElements(element);                          // Wywoluje metode getElements(element) na biezacej instancji klasy AmountWidget, ktora ma na celu znalezienie i zapisanie referencji do roznych elementow widgetu.
+      thisWidget.setValue(settings.amountWidget.defaultValue);  // Wywoluje metode setValue na biezacej instancji klasy AmountWidget, ktora ma ustawic poczatkowa wartosc widgetu na wartosc domyslna z obiektu settings
+      thisWidget.initAction(thisWidget.input.element);          // Wywoluje metode initAction na biezacej instancji klasy AmountWidget, ktora unicjuje akcje widgetu
     }
 
-    getElements(element) {
+// Metoda odpowiedzialna za przypisanie odpowiednich elementow DOM do wlasciwosci obiektu klasy 'AmountWidget' dzieki czemu moge pozniej uzywac elementow do innych akcji funkcji zwiazanych z dzialaniem widgetu liczby    
+    getElements(element) {    // element jest elementem DOM z initAmountWidget
       const thisWidget = this;
 
-      thisWidget.element = element;
-      thisWidget.input = thisWidget.element.querySelector(
+      thisWidget.element = element;   //Przypisuje argument 'element' do wlasciwosci 'element' obiektu klasy AmountWidget. Dzieki temu, thisWidget.element przechowuje referencje do elementu DOM, ktory reprezentuje widget liczby.
+      thisWidget.input = thisWidget.element.querySelector(  // Szukam elemenmtow inputu wewnatrz widgetu
         select.widgets.amount.input
       );
-      thisWidget.linkDecrease = thisWidget.element.querySelector(
+      thisWidget.linkDecrease = thisWidget.element.querySelector(   // to wlasciwosci obiektu klasy AmountWidget, ktora przechowuje referencje do odpowiednich elementów wewnątrz widgetu liczby.
         select.widgets.amount.linkDecrease
       );
-      thisWidget.linkIncrease = thisWidget.element.querySelector(
+      thisWidget.linkIncrease = thisWidget.element.querySelector(   // to wlasciwosci obiektu klasy AmountWidget, ktora przechowuje referencje do odpowiednich elementów wewnątrz widgetu liczby.
         select.widgets.amount.linkIncrease
       );
     }
 
+//Metoda odpowiada za ustawienie nowej wartosci dla widgetu liczby, sprawdzajac przy tym czy wartosc miesci sie w okreslonym zakresie i aktualizuje pola input na stronie aby odzwierciedlac nowa wartosc i wywoluje metode announce ().    
     setValue(value) {
       const thisWidget = this; // zmienna lokalna ktora odnosi sie do biezacej instacji klasy AmountWidget
 
-      const newValue = parseInt(value); // zmienna ktora przechowuje wartosc przekazana do metody setValue, przekonwertowana na liczbe calkowita ze wzgledu ze kazdy input to string
+      const newValue = parseInt(value); // do zmiennej newValue przypisuje konwersje przekazana wartosc value na liczbe całkowita za pomoca funkcji parseInt(). Wartosc ta będzie reprezentowac nowa wartosc liczby, ktora chce ustawic dla widgetu liczby.
 
-      if (thisWidget.value !== newValue && !isNaN(newValue)) {
+      if (thisWidget.value !== newValue && !isNaN(newValue)) {    // Warunek sprawdza, czy nowa wartosc newValue rozni się od biezacej wartosci widgetu thisWidget.value, oraz czy newValue jest liczba (czy nie jest NaN - "Not a Number").
         // NaN not a number
+
         if (
-          newValue >= settings.amountWidget.defaultMin &&
+          newValue >= settings.amountWidget.defaultMin &&   // Sprawdzam czy newValue miesci sie w zakresie zdefiniowanym w settings.amountWidget.defaultMin
           newValue <= settings.amountWidget.defaultMax
         ) {
-          thisWidget.value = newValue;
+          thisWidget.value = newValue;    // jesli tak to przypisuje newValue do wlasciwosci yhisWidget.value/ w ten sposob zapobiegam ustawieniu wartosci poza okreslonym zakresem.
         }
       }
 
-      thisWidget.input.value = thisWidget.value;
-      thisWidget.announce();
+      thisWidget.input.value = thisWidget.value;    // Ustawiam wartosc pola input wewnatrz widgetu liczby na thisWidget.value. Dzieki temu, po zmianie wartosci, pole input zostanie zaktualizowane, aby odzwierciedlac biezaca wartosc widgetu.
+      thisWidget.announce();    //  Wywołuje metode announce() klasy AmountWidget, ktora ma za zadanie poinformować innych, ze wartosc widgetu zostala zmieniona.
     }
 
+//Metoda ktora inicjuje dzialanie widgetu liczby, dodajac nasluchiwanie na rozne zdarzenia, ktore pozwalaja uzytkownikowi zmieniac wartosc w polu input oraz klikajac przyciski zmiany ilosci. Kiedy uzytkownik wprowadzi zmiane w polu input lub kliknie na przyciski zmiany ilosci, zostana wywolane odpowiednie funkcje anonimowe, ktore wywolaja metode thisWidget.setValue() w celu aktualizacji wartosci widgetu liczby.
     initAction() {
       const thisWidget = this;
 
-      thisWidget.input.addEventListener('change', function () {
+      thisWidget.input.addEventListener('change', function () {   // Na wyszukanym elemencie thisWidget.input dodaje nasluch na zdarzenie 'change' Kiedy nastapi zdarzenie to wywolywana jest funkcja anonimowa ktora wywola metode setValue(this.value). Oznacza to, ze nowa wartosc wpisana przez uzytkownika zostanie ustawiona jako nowa wartosc widgetu liczby.
         thisWidget.setValue(this.value);
       });
 
-      thisWidget.linkDecrease.addEventListener('click', function (event) {
+      thisWidget.linkDecrease.addEventListener('click', function (event) {    // Wartosc widgetu liczby zostanie zmniejszony o -1 
         event.preventDefault();
         thisWidget.setValue(thisWidget.value - 1);
       });
 
-      thisWidget.linkIncrease.addEventListener('click', function (event) {
+      thisWidget.linkIncrease.addEventListener('click', function (event) {    // Wartosc widgetu liczby zostanie zwiekszony o +1
         event.preventDefault();
         thisWidget.setValue(thisWidget.value + 1);
       });
