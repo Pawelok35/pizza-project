@@ -164,51 +164,46 @@
       );
     }
 
-// Metoda ktora inicjalizuje akordeon dla produktu, jesli taki istnieje. Akordeon jest rodzajem interaktywnego komponentu, ktory pozwala na rozwijanie i zwijanie sekcji na stronie.    
+// Metoda ktora inicjalizuje akordeon dla elementów produktów, jesli taki istnieje. Akordeon jest rodzajem interaktywnego komponentu, ktory pozwala na rozwijanie i zwijanie sekcji na stronie.    
     initAccordion() {
       const thisProduct = this;
 
-      /* find the clickable trigger (the element that should react to clicking) */
-      const clickableTrigger = thisProduct.element.querySelector(
+      const clickableTrigger = thisProduct.element.querySelector(  // Wyszukuje element, (ktory bedzie reagowal na klikniecie) na podstawie selectora . . clickable, w obrębie elementu "element"
         select.menuProduct.clickable
       );
 
-      /* START: add event listener to clickable trigger on event click */
-      clickableTrigger.addEventListener('click', function (event) {
-        /* prevent default action for event */
-        event.preventDefault();
+      clickableTrigger.addEventListener('click', function (event) {  // na wyszukanym  elemencie "clickableTrigger" dodaje nasluch  jako CLICK i zapisuje w parametrze funckji 'event'
+        event.preventDefault();                                     // zapobiega domyslnej akcji (scroll to top) dla zdarzenia co jest stotne aby uniknac przewijania strony do gory, gdy klikne na 'clickable', chce reagowac tylko na klikniecie bez przenoszenia na gore strony.
 
-        /* find active product (product that has active class) */
-        const activeProduct = document.querySelector('.product.active');
+        const activeProduct = document.querySelector('.product.active'); // Znajduje element product.active na stronie HTML, ktory jest juz aktywny (czyli ktory ma klase "active"). Ta zmienna przechowuje referencje do tego produktu.
 
-        /* if there is active product and it's not thisProduct.element, remove class active from it */
-        if (activeProduct && activeProduct !== thisProduct.element) {
-          activeProduct.classList.remove('active');
+        if (activeProduct && activeProduct !== thisProduct.element) { // Sprawdza, czy istnieje aktywny produkt i czy aktywny produkt nie jest aktualnym produktem (!= rozny od -> thisProduct.element). 
+          activeProduct.classList.remove('active');                  // Jesli tak, usuwa klase "active" z aktywnego produktu, aby go schowac i zachowac funkcjonalnosc akordeonu.
         }
 
-        /* toggle active class on thisProduct.element */
-        thisProduct.element.classList.toggle('active');
-      });
-    }
+        thisProduct.element.classList.toggle('active');   // sprowadza czy element 'this.Product.element' (czyli biezacy produkt) ma klase 'active' 
+      });                                                // Jesli element ma juz klase 'active' (czyli element-produkt jest juz rozwiniety) to 'classList.toggle()' usunie te klase z elementu co spowoduje ze szczeguly produktu zostana zwiniete.
+    }                                                   // Jesli element nie ma klasy "active", to 'classList.toggle()' doda te klase do elementu, co spowoduje, ze szczegoly produktu zostana rozwiniete. Produkt, ktory wczesniej nie byl rozwiniety, teraz bedzie rozwiniety.
    
-// Metoda ktora inicjalizuje formularz zamowienia dla produktu. Moze to obejmowac walidacje danych, obsługe wyborow opcji produktu itp.   
+// Metoda ktora inicjalizuje formularz zamowienia dla produktu.   
     initOrderForm() {
       const thisProduct = this;
-      //console.log(thisProduct);
-      thisProduct.form.addEventListener('submit', function (event) {
-        event.preventDefault();
-        thisProduct.processOrder();
+    
+      thisProduct.form.addEventListener('submit', function (event) {  // Dodanie nasluchu na zdarzenie submit na elemencie this.Product (formularz) 
+                                                                     // Gdy uzytkownik nacisnie button submit funkcja obslugi zdarzenia zostaje wywolana
+        event.preventDefault();                 // funkcja zapobiega domyslnej akcji (przeslanie danych do serwera) bo chce aby dane z formularza byly przetwarzane wewnatrz aplikacji i odpowiednio aktualizowaly koszyk lub zamowienie.                                  
+        thisProduct.processOrder();            // wywolanie metody ktora jest odpowiedzialna za przetworzenie
       });
 
-      for (let input of thisProduct.formInputs) {
-        input.addEventListener('change', function () {
-          thisProduct.processOrder();
+      for (let input of thisProduct.formInputs) {  //petla iteruje po wszystkich elementach formularza danego productu .formInputs to inputy uzytkownika oraz checkbox i radio 
+        input.addEventListener('change', function () {  // ustawienie nasluchu na zdarzenie change na elemencie input -> kiedy uzytkownik zmieni wartosc wybranego inputu zostanie wywolana funkcja ktora ...
+          thisProduct.processOrder();                 // wywoluje metode processOrder co powoduje ponowne przeliczenie zamowienia 
         });
       }
 
-      thisProduct.cartButton.addEventListener('click', function (event) {
-        event.preventDefault();
-        thisProduct.processOrder();
+      thisProduct.cartButton.addEventListener('click', function (event) {    // ustawienie nasluchu na zdarzenie click na elemencie thisProduct.cartButton i zapisanie zdarzenia w event
+        event.preventDefault();                                             // domyslna akcja to wyslanie dancyh formularza lub przeniesienie do innej strony . Klikniecie obsluguje za pomoca JS a nie chce przekierowania na inna strone .
+        thisProduct.processOrder();                                       // Po zatrzymaniu domnyslnej akcji nastepuje wywolanie metody processOrder()
       });
     }
     
@@ -277,23 +272,24 @@
       thisProduct.priceElem.innerHTML = price;
     }
 
-// Metoda ktora inicjalizuje widget do wybierania ilosci produktu. Widget ten moze umożliwiac uzytkownikowi wybieranie liczby sztuk produktu, jakie chce zamowic.    
+// Metoda ktora INICJALIZUJE widget do wybierania ilosci produktu. Widget ten moze umozliwiac uzytkownikowi wybieranie liczby sztuk produktu, jakie chce zamowic.    
     initAmountWidget() {
       const thisProduct = this;
-      thisProduct.amountWidget = new AmountWidget(thisProduct.amountWidgetElem);
 
-      thisProduct.amountWidgetElem.addEventListener('updated', function () {
-        thisProduct.processOrder();
+      thisProduct.amountWidget = new AmountWidget(thisProduct.amountWidgetElem);    // tworze NOWA INSTANCJE KLASY  AmountWidget i argumentem konstruktora (klasy) jest element thisProduct.amountWidgetElem (z metody getElements reprezentuje widget do wyboru ilosci dla tego konkretnego produktu.)
+
+      thisProduct.amountWidgetElem.addEventListener('updated', function () {  // Na obiekcie thisProduct o wlasciwosci amountWidgetElem ustawiam nasluch na zdarzenie update. Jezeli uzytkownik zmieni ilosc produktu to zadziala update i...
+        thisProduct.processOrder();                                          // ... i wywola metode processOrder() ktora jest odpwiedzialna za przetwarzanie zamowienia np oblicza cene.
       });
     }
   }
 
   class AmountWidget {
-    constructor(element) {
+    constructor(element) {    // konstruktor otrzymuje jeden element, ktory reprezentuje element DOM (z initAmountWidget)
       const thisWidget = this;
 
-      console.log('AmountWidget: ', thisWidget);
-      console.log('constructor arguments: ', element);
+      console.log('AmountWidget: ', thisWidget);        // Wyswietla informacje o biezacej instancji klasy AmountWidget w konsoli przegladarki.
+      console.log('constructor arguments: ', element);  //  Wyswietla argumenty przekazane do konstruktora w konsoli przegladarki.
 
       thisWidget.getElements(element);
       thisWidget.setValue(settings.amountWidget.defaultValue);
