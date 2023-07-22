@@ -352,41 +352,49 @@
       });
     }
 
+// Metoda sluzy do powiadamiania innych komponentow lub modulow, ze wartosc widgetu liczby zostala z aktualizowana.    
     announce() {
       const thisWidget = this;
 
-      const event = new Event('updated');
-      thisWidget.element.dispatchEvent(event);
-    }
+      const event = new Event('updated');     // do stalej event przypisuje tworzony nowy obiekt o zdarzeniu 'update' 
+      thisWidget.element.dispatchEvent(event);  // Wywoluje zdarzenie "updated" na elemencie thisWidget.element, czyli na elemencie DOM, ktory reprezentuje widget liczby. Metoda dispatchEvent() jest metoda wbudowana, ktora słuzy do wywolywania zdarzen na elemencie. W tym przypadku, wywolanie dispatchEvent(event) powoduje uruchomienie zdarzenia "updated" na elemencie widgetu liczby.
+    } // Za pomoca tego mechanizmu, inne czesci aplikacji lub komponenty moga nasluchiwac na zdarzenie "updated" na elemencie widgetu liczby i reagowac na zmiany wartosci tego widgetu. To pozwala na rozdzielenie odpowiedzialnosci miedzy roznymi czesciami aplikacji, dzieki czemu mozna w latwy sposob reagowac na zmiany wartosci w innych czesciach kodu. Na przyklad, moze to byc wykorzystane do aktualizacji koszyka zakupow w momencie zmiany ilosci produktu lub do odswieżania ceny zamowienia po zmianie ilosci produktow w koszyku.
   }
 
+// Klasa reprezentuje koszyk zakupowy  
   class Cart {
+
+// Konmstruktor inicjuje nowy koszyk zakupowy, przypisuje mu wlasciwosci oraz metody potrzebne do jego funkcjonowania i wyswietla informacje o nowo utworzonym koszyku w konsoli.    
     constructor(element) {
       const thisCart = this;
   
-      thisCart.products = [];
-      thisCart.getElements(element);
-      thisCart.initActions();
+      thisCart.products = [];         // Utworzenie pustej tablicy w ktorej beda przechowywane produkty dodane do koszyka. Jest to wlasciwosc koszyka.
+      thisCart.getElements(element);  //  Wywoluje metode getElements na obiekcie koszyka, aby znalezc i zapisac referencje do elementow DOM reprezentujących koszyk. Metoda getElements odpowiedzialna jest za znalezienie i zapisanie referencji do roznych elementow, takich jak przyciski, pola formularza itp., ktore beda wykorzystywane do interakcji z koszykiem.
+      thisCart.initActions();         // Wywolanie metody initAction na obiekcie koszyka aby zainicjowac nasluchiwanie na rozne zdarzenia (klikniecie przycisku dodaj do koszyka) i odpowiednio na nie reagowac.
   
       console.log('new Cart', thisCart);
     }
   
+// Metoda ktora znajduje i przechowuje elementy DOM, ktore sa zwiazane z koszykiem zakupowym.     
     getElements(element) {
       const thisCart = this;
   
-      thisCart.dom = {};
+      thisCart.dom = {};    // Inicjuje wlasciwosc dom na obiekcie thisCart. dom jest obiektem, ktory bedzie przechowywal referencje do roznych elementów DOM zwiazanych z koszykiem.
   
-      thisCart.dom.wrapper = element;
-      thisCart.dom.toggleTrigger = thisCart.dom.wrapper.querySelector(
+      thisCart.dom.wrapper = element; // Wyszukuje element DOM, ktory reprezentuje caly kontener koszyka zakupowego (np. <div class="cart">) i przypisuje go do wlasciwosci dom.wrapper.
+      
+      thisCart.dom.toggleTrigger = thisCart.dom.wrapper.querySelector(  //Wyszukuje element DOM, ktory jest odpowiedzialny za akcje przelaczania widocznosci koszyka (np. przycisk otwierajacy/ zamykajacy koszyk) za pomoca selektora select.cart.toggleTrigger. Znaleziony element zostaje przypisany do wlasciwosci dom.toggleTrigger.
         select.cart.toggleTrigger
       );
     }
   
+// Metoda sluzy do inicjowania akcji nasluchiwania zdarzen na elemencie reprezentujacym aktywacje lub dezaktywacje koszyka zakupowego. Dzieki tej metodzie uzytkownik bedzie mogl otworzyc i zamknac koszyk poprzez klikniecie odpowiedniego przycisku.   
     initActions() {
       const thisCart = this;
-      thisCart.dom.toggleTrigger.addEventListener('click', function (event) {
-        event.preventDefault();
-        thisCart.dom.wrapper.classList.toggle(classNames.cart.wrapperActive);
+
+      thisCart.dom.toggleTrigger.addEventListener('click', function (event) {   //Dodaje nasluchiwanie na zdarzenie 'click' dla elementu dom.toggleTrigger, ktory zostal wczesniej zidentyfikowany w metodzie getElements(). Klikniecie tego elementu bedzie aktywowane przez uzytkownika, aby otworzyc lub zamknac koszyk.
+        event.preventDefault();   // Zabklokowanie domyslnej funkcji scroll up
+        thisCart.dom.wrapper.classList.toggle(classNames.cart.wrapperActive);   // Wywoluje sie metoda classList.toggle() na wlasciwosci dom.wrapper, ktora przechowuje element reprezentujacy caly kontener koszyka zakupowego (np. <div class="cart">). Metoda toggle() dodaje klase classNames.cart.wrapperActive, jesli jej nie ma, lub usuwa ja, jesli juz istnieje. classNames.cart.wrapperActive jest wczesniej zdefiniowana klasa CSS, ktora odpowiada za aktywnosc koszyka, np. wyswietlanie go lub ukrywanie.
       });
     }
   }
