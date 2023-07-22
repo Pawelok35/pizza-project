@@ -399,43 +399,64 @@
     }
   }
 
-  const app = {
+// Do obiektu..  
+  const app = {     
+
+// Metoda odpowiedzialna za inicjacje menu aplikacji a konkretnie tworzenie produktow na podstawie danych znajdujacych sie w thisApp.data.products.
     initMenu: function () {
-      const thisApp = this;
+      const thisApp = this;   // Tworze lokalna zmienna thisApp, ktora przechowuje referencje do obiektu app
       console.log('thisApp.data:', thisApp.data);
-      for (let productData in thisApp.data.products) {
-        new Product(productData, thisApp.data.products[productData]);
+      for (let productData in thisApp.data.products) {    // w pętli iteruje przez wszystkie produkty znajdujace sie w thisApp.data.products. Dla kazdego produktu wykonuje sie następujące czynności:
+        new Product(productData, thisApp.data.products[productData]);   // Tworzy nowa instancje klasy Product za pomocą new Product(). Przy tworzeniu instancji przekazuje sie dwa argumenty: productData (klucz) oraz thisApp.data.products[productData] (wartosc). productData to identyfikator produktu, a thisApp.data.products[productData] to obiekt z danymi tego produktu. Klasa Product sluzy do reprezentacji i interakcji z pojedynczym produktem na stronie.
       }
     },
 
+// Metoda inicjujaca dane w aplikacji
     initData: function () {
-      const thisApp = this;
+      const thisApp = this;   // Tworze lokalna zmienna thisApp, ktora przechowuje referencje do obiektu app. Jest to pomocne, poniewaz wewnatrz metody zmienna this może wskazywac na inny obiekt, dlatego warto utworzyc zmienna thisApp dla zachowania spojnosci.
 
-      thisApp.data = dataSource;
+      thisApp.data = dataSource;  // Przypisuje do wlasciwosci thisApp.data caly obiekt dataSource. Obiekt dataSource zawiera wszystkie dane potrzebne do funkcjonowania aplikacji, takie jak produkty, kategorie, ceny, itp.
     },
 
+// Metoda ta jest glownym punktem inicjalizacji calej aplikacji 
     init: function () {
-      const thisApp = this;
+      const thisApp = this;     // Referencja do obiektu app
       console.log('*** App starting ***');
       console.log('thisApp:', thisApp);
       console.log('classNames:', classNames);
       console.log('settings:', settings);
       console.log('templates:', templates);
 
-      thisApp.initData();
-      thisApp.initMenu();
-      thisApp.initCart();
+      thisApp.initData();   // Inicjalizacja danych
+      thisApp.initMenu();   // Inicjalizacja Menu
+      thisApp.initCart();   // Inicjalizacja koszyka
     },
 
+// Metoda sluzy do inicjalizacji koszyka zakupow. Dzieki temu, koszyk jest gotowy do uzycia i bedzie dzialal poprawnie w calej aplikacji.
     initCart: function () {
-      const thisApp = this;
+      const thisApp = this;     // Referencja do obiektu app
 
-      const cartElem = document.querySelector(select.containerOf.cart);
-      thisApp.cart = new Cart(cartElem);
-    },
+      const cartElem = document.querySelector(select.containerOf.cart);   // Znajduje element na stronie HTML, ktory bedzie kontenerem dla koszyka zakupow. Wykorzystuje do tego selektor select.containerOf.cart, ktory wskazuje na odpowiedni element na stronie.
+      thisApp.cart = new Cart(cartElem);    // Tworzy nowy obiekt Cart, ktory reprezentuje koszyk zakupow. Jako argument przekazuje znaleziony element cartElem, ktory bedzie kontenerem dla koszyka.
+    },                        // Przypisuje utworzony obiekt Cart do wlasciwosci cart obiektu app (thisApp.cart). Dzieki temu, obiekt Cart bedzie dostepny w innych czesciach aplikacji i bedzie mozna korzystac z jego funkcjonalnosci.
   };
 
   app.init();
 }
+/*Tworzy lokalna zmienna thisApp, ktora przechowuje referencję do obiektu app. To pozwala na odwolywanie sie do obiektu app wewnatrz metody za pomoca krotszej nazwy thisApp.
+
+Wyswietla w konsoli komunikat "App starting" oraz rozne informacje o aplikacji, takie jak thisApp.data (dane aplikacji), classNames (klasy CSS), settings (ustawienia aplikacji) i templates (szablony Handlebars). Te informacje sa pomocne podczas debugowania i pozwalaja sprawdzic, czy dane sa wczytane poprawnie.
+
+Wywoluje thisApp.initData() - inicjalizuje dane aplikacji, ktore sa przechowywane w obiekcie dataSource. Wczesniej dane zostaly zaladowane do thisApp.data.
+
+Wywoluje thisApp.initMenu() - inicjalizuje menu aplikacji. Ta metoda tworzy produkty na podstawie danych z thisApp.data.products i renderuje je na stronie.
+
+Wywoluje thisApp.initCart() - inicjalizuje koszyk zakupow. Ta metoda tworzy obiekt Cart i przypisuje go do wlasciwosci cart obiektu app.
+
+Po wywolaniu app.init(), aplikacja jest w pelni zainicjalizowana i gotowa do dzialania. Produkty sa wyswietlane w menu, a koszyk zakupow jest gotowy do przechowywania produktow. Aplikacja jest gotowa do obslugi interakcji uzytkownika i wykonywania roznych akcji na produktach i w koszyku zakupow.
+*/
+
+
+
 
 
