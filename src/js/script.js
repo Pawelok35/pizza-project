@@ -31,7 +31,7 @@
       amount: {
         input: 'input.amount', // CODE CHANGED
         linkDecrease: 'a[href="#less"]',
-        linkIncrease: 'a[href="#more"]',
+        linkIncrease: 'a[href="#more"]',  // elementu a zatrybut href o wartosci "#more"  [atrybut]
       },
     },
     // CODE ADDED START
@@ -353,7 +353,7 @@ g. widget ilosci produktu
     addToCart() {
       const thisProduct = this;
       const productSummary = thisProduct.prepareCartProduct(); //wywolanie metody i przypisanie wyniku do stalej
-      thisApp.cart.add(productSummary); //przekazanie wyniku prepareCartProduct() do metody cart.add
+      app.cart.add(productSummary); //przekazanie wyniku prepareCartProduct() do metody cart.add
     }
 
     //9.
@@ -518,6 +518,8 @@ g. widget ilosci produktu
         //Wyszukuje element DOM, ktory jest odpowiedzialny za akcje przelaczania widocznosci koszyka (np. przycisk otwierajacy/ zamykajacy koszyk) za pomoca selektora select.cart.toggleTrigger. Znaleziony element zostaje przypisany do wlasciwosci dom.toggleTrigger.
         select.cart.toggleTrigger
       );
+
+      thisCart.dom.productList = thisCart.dom.wrapper.querySelector(select.cart.productList); // odnalezienie elementu listy produktu koszyku
     }
 
     //18. Metoda sluzy do inicjowania akcji nasluchiwania zdarzen na elemencie reprezentujacym aktywacje lub dezaktywacje koszyka zakupowego. Dzieki tej metodzie uzytkownik bedzie mogl otworzyc i zamknac koszyk poprzez klikniecie odpowiedniego przycisku.
@@ -532,10 +534,17 @@ g. widget ilosci produktu
     }
 
     //19.
-    add(menuProduct) {
-      //const thisCart = this;
+    add() {
+      const thisCart = this;
 
-      console.log('adding product', menuProduct);
+      //a. Znajduje wybrany kod HTML
+      const generatedHTML = templates.cartProduct(thisCart.data); 
+
+      thisCart.element = utils.createDOMFromHTML(generatedHTML);
+      
+      thisCart.dom.productList.appendChild(thisCart.element);
+
+    
     }
   }
 

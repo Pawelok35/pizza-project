@@ -31,7 +31,7 @@
       amount: {
         input: 'input.amount', // CODE CHANGED
         linkDecrease: 'a[href="#less"]',
-        linkIncrease: 'a[href="#more"]',
+        linkIncrease: 'a[href="#more"]',  // elementu a zatrybut href o wartosci "#more"  [atrybut]
       },
     },
     // CODE ADDED START
@@ -155,7 +155,6 @@ g. widget ilosci produktu
       thisProduct.initOrderForm();
       thisProduct.initAmountWidget();
       thisProduct.processOrder();
-      
     }
 
     // 2. Metoda ktora renderuje produkt w menu aplikacji lub na stronie
@@ -300,7 +299,8 @@ g. widget ilosci produktu
           const optionSelected =
             formData[paramId] && formData[paramId].includes(optionId);
 
-          if (optionSelected) {   //obliczanie ceny jednostkowej i aktualizacje jej w thisProduct
+          if (optionSelected) {
+            //obliczanie ceny jednostkowej i aktualizacje jej w thisProduct
             // check if the option is not default
             if (!option.default) {
               price += option.price;
@@ -331,7 +331,7 @@ g. widget ilosci produktu
           }
         }
       }
-      
+
       // update calculated price in the HTML
       price *= thisProduct.amountWidget.value;
       thisProduct.priceElem.innerHTML = price;
@@ -353,14 +353,14 @@ g. widget ilosci produktu
     addToCart() {
       const thisProduct = this;
       const productSummary = thisProduct.prepareCartProduct(); //wywolanie metody i przypisanie wyniku do stalej
-      thisApp.cart.add(productSummary); //przekazanie wyniku prepareCartProduct() do metody cart.add
+      app.cart.add(productSummary); //przekazanie wyniku prepareCartProduct() do metody cart.add
     }
 
     //9.
     prepareCartProduct() {
       const thisProduct = this;
 
-      thisProduct.params = thisProduct.prepareCartProductParams();    // wykorzysatnie wyniku metody ...ProductParams jako wartosc dla wlasciwosci params
+      thisProduct.params = thisProduct.prepareCartProductParams(); // wykorzysatnie wyniku metody ...ProductParams jako wartosc dla wlasciwosci params
 
       const productSummary = {
         id: thisProduct.id, // identyfikator produktu (id) do obiektu productSummary.
@@ -370,10 +370,10 @@ g. widget ilosci produktu
         price: thisProduct.priceSingle * thisProduct.amount, // pojedyncza cena pomnozona przez ilosc produktow
         params: {},
       };
-      return productSummary; // zwraca obiekt podsumowania
+      return productSummary; // zwraca caly obiekt podsumowania
     }
 
-    //10. podsumowanie wszystkich wybranych opcji 
+    //10. podsumowanie wszystkich wybranych opcji
     prepareCartProductParams() {
       const thisProduct = this;
       const formData = utils.serializeFormToObject(thisProduct.form); // Pobieram dane z formularza produktu i przeksztalcam n a obiekt JS (za pomoca funkcji)
@@ -518,6 +518,8 @@ g. widget ilosci produktu
         //Wyszukuje element DOM, ktory jest odpowiedzialny za akcje przelaczania widocznosci koszyka (np. przycisk otwierajacy/ zamykajacy koszyk) za pomoca selektora select.cart.toggleTrigger. Znaleziony element zostaje przypisany do wlasciwosci dom.toggleTrigger.
         select.cart.toggleTrigger
       );
+
+      thisCart.dom.productList = thisCart.dom.wrapper.querySelector(select.cart.productList); // odnalezienie elementu listy produktu koszyku
     }
 
     //18. Metoda sluzy do inicjowania akcji nasluchiwania zdarzen na elemencie reprezentujacym aktywacje lub dezaktywacje koszyka zakupowego. Dzieki tej metodzie uzytkownik bedzie mogl otworzyc i zamknac koszyk poprzez klikniecie odpowiedniego przycisku.
@@ -532,10 +534,17 @@ g. widget ilosci produktu
     }
 
     //19.
-    add(menuProduct) {
-      //const thisCart = this;
+    add() {
+      const thisCart = this;
 
-      console.log('adding product', menuProduct);
+      //a. Znajduje wybrany kod HTML
+      const generatedHTML = templates.cartProduct(thisCart.data); 
+
+      thisCart.element = utils.createDOMFromHTML(generatedHTML);
+      
+      thisCart.dom.productList.appendChild(thisCart.element);
+
+    
     }
   }
 
