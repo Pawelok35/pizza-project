@@ -31,7 +31,7 @@
       amount: {
         input: 'input.amount', // CODE CHANGED
         linkDecrease: 'a[href="#less"]',
-        linkIncrease: 'a[href="#more"]',  // elementu a zatrybut href o wartosci "#more"  [atrybut]
+        linkIncrease: 'a[href="#more"]',  // elementu a atrybut href o wartosci "#remove"
       },
     },
     // CODE ADDED START
@@ -146,15 +146,17 @@ g. widget ilosci produktu
 
       //Przypisanie argumentow konstruktora do wlasciwosci obiektu this.Product
       thisProduct.id = id;
-      thisProduct.data = data;
+    thisProduct.data = data;
+    thisProduct.name = data.name;
+    thisProduct.amount = 1; // Ustawienie początkowej ilości produktu na 1
+    thisProduct.priceSingle = data.price; // Przechowanie ceny jednostkowej produktu
 
-      // 1. Wywolanie roznych  metod inicjalizujacych funkcjonalnosc produktu
-      thisProduct.renderInMenu(); // utworzenie thisProduct.element
-      thisProduct.getElements(); // utworzenie akordeonu, dostep do: formularza, wskazanie wszystkich inputow i selectow,  do ceny produktu, do kontener do obrazow produktu, do widget ilosci produktu
-      thisProduct.initAccordion();
-      thisProduct.initOrderForm();
-      thisProduct.initAmountWidget();
-      thisProduct.processOrder();
+    thisProduct.renderInMenu();
+    thisProduct.getElements();
+    thisProduct.initAccordion();
+    thisProduct.initOrderForm();
+    thisProduct.initAmountWidget();
+    thisProduct.processOrder();
     }
 
     // 2. Metoda ktora renderuje produkt w menu aplikacji lub na stronie
@@ -277,7 +279,7 @@ g. widget ilosci produktu
 
       // covert form to object structure e.g. { sauce: ['tomato'], toppings: ['olives', 'redPeppers']}
       const formData = utils.serializeFormToObject(thisProduct.form);
-      console.log('formData', formData);
+      //console.log('formData', formData);
 
       // set price to default price
       let price = thisProduct.data.price;
@@ -292,7 +294,7 @@ g. widget ilosci produktu
         for (let optionId in param.options) {
           // determine option value, e.g. optionId = 'olives', option = { label: 'Olives', price: 2, default: true }
           const option = param.options[optionId];
-          console.log(optionId, option);
+          //console.log(optionId, option);
 
           // check if there is param with a name of paramId in formData and if it includes optionId
 
@@ -352,8 +354,8 @@ g. widget ilosci produktu
     //8.
     addToCart() {
       const thisProduct = this;
-      const productSummary = thisProduct.prepareCartProduct(); //wywolanie metody i przypisanie wyniku do stalej
-      app.cart.add(productSummary); //przekazanie wyniku prepareCartProduct() do metody cart.add
+      const productSummary = thisProduct.prepareCartProduct();
+      app.cart.add(productSummary); // Przekazujemy podsumowanie produktu do metody cart.add
     }
 
     //9.
@@ -361,14 +363,14 @@ g. widget ilosci produktu
       const thisProduct = this;
 
       thisProduct.params = thisProduct.prepareCartProductParams(); // wykorzysatnie wyniku metody ...ProductParams jako wartosc dla wlasciwosci params
-
+      
       const productSummary = {
         id: thisProduct.id, // identyfikator produktu (id) do obiektu productSummary.
         name: thisProduct.name, //  nazwa produktu (name) do obiektu productSummary.
         amount: thisProduct.amount, //  ilosc produktu (amount) do obiektu productSummary.
         priceSingle: thisProduct.priceSingle,
         price: thisProduct.priceSingle * thisProduct.amount, // pojedyncza cena pomnozona przez ilosc produktow
-        params: {},
+        params: thisProduct.params,
       };
       return productSummary; // zwraca caly obiekt podsumowania
     }
@@ -513,13 +515,11 @@ g. widget ilosci produktu
       thisCart.dom = {}; // Inicjuje wlasciwosc dom na obiekcie thisCart. dom jest obiektem, ktory bedzie przechowywal referencje do roznych elementów DOM zwiazanych z koszykiem.
 
       thisCart.dom.wrapper = element; // Wyszukuje element DOM, ktory reprezentuje caly kontener koszyka zakupowego (np. <div class="cart">) i przypisuje go do wlasciwosci dom.wrapper.
-
+      this.dom.productList = this.dom.wrapper.querySelector('.cart__order-summary');
       thisCart.dom.toggleTrigger = thisCart.dom.wrapper.querySelector(
         //Wyszukuje element DOM, ktory jest odpowiedzialny za akcje przelaczania widocznosci koszyka (np. przycisk otwierajacy/ zamykajacy koszyk) za pomoca selektora select.cart.toggleTrigger. Znaleziony element zostaje przypisany do wlasciwosci dom.toggleTrigger.
         select.cart.toggleTrigger
       );
-
-      thisCart.dom.productList = thisCart.dom.wrapper.querySelector(select.cart.productList); // odnalezienie elementu listy produktu koszyku
     }
 
     //18. Metoda sluzy do inicjowania akcji nasluchiwania zdarzen na elemencie reprezentujacym aktywacje lub dezaktywacje koszyka zakupowego. Dzieki tej metodzie uzytkownik bedzie mogl otworzyc i zamknac koszyk poprzez klikniecie odpowiedniego przycisku.
@@ -534,17 +534,19 @@ g. widget ilosci produktu
     }
 
     //19.
-    add() {
+    add(menuProduct) {
       const thisCart = this;
-
-      //a. Znajduje wybrany kod HTML
-      const generatedHTML = templates.cartProduct(thisCart.data); 
-
-      thisCart.element = utils.createDOMFromHTML(generatedHTML);
-      
-      thisCart.dom.productList.appendChild(thisCart.element);
-
     
+      // Generate HTML based on template and product data
+      const generatedHTML = templates.cartProduct(menuProduct);
+    
+      // Create DOM element from the HTML code
+      const generatedDOM = utils.createDOMFromHTML(generatedHTML);
+    
+      // Add the DOM element to the cart
+      thisCart.dom.productList.appendChild(generatedDOM);
+    
+      thisCart.products.push(menuProduct); // Dodaj produkt do listy produktów w koszyku
     }
   }
 
