@@ -361,19 +361,21 @@ g. widget ilosci produktu
     //9.
     prepareCartProduct() {
       const thisProduct = this;
-
-      thisProduct.params = thisProduct.prepareCartProductParams(); // wykorzysatnie wyniku metody ...ProductParams jako wartosc dla wlasciwosci params
-
+      thisProduct.name = thisProduct.data.name;
+      thisProduct.amount = thisProduct.amountWidget.defaultValue;
+      
       const productSummary = {
-        id: thisProduct.id, // identyfikator produktuu (id) do obiektu productSummary.
-        name: thisProduct.name, //  nazwa produktu (name) do obiektu productSummary.
-        amount: thisProduct.amount, //  ilosc produktu (amount) do obiektu productSummary.
+        id: thisProduct.id,
+        name: thisProduct.data.name,
+        amount: thisProduct.amountWidget.value,
         priceSingle: thisProduct.priceSingle,
-        price: thisProduct.priceSingle * thisProduct.amount, // pojedyncza cena pomnozona przez ilosc produktow
-        params: thisProduct.params,
+        price: thisProduct.priceSingle * thisProduct.amountWidget.value,
+        params: thisProduct.prepareCartProductParams(),
       };
-      return productSummary; // zwraca caly obiekt podsumowania
+      return productSummary;
     }
+
+
 
     //10. podsumowanie wszystkich wybranych opcji
     prepareCartProductParams() {
@@ -549,6 +551,7 @@ g. widget ilosci produktu
       thisCart.dom.productList.appendChild(generatedDOM);
 
       thisCart.products.push(menuProduct); // Dodaj produkt do listy produktów w koszyku
+      console.log(' thisCart.products',  thisCart.products);
     }
   }
 
