@@ -31,7 +31,7 @@
       amount: {
         input: 'input.amount', // CODE CHANGED
         linkDecrease: 'a[href="#less"]',
-        linkIncrease: 'a[href="#more"]',  // elementu a atrybut href o wartosci "#remove"
+        linkIncrease: 'a[href="#more"]', // elementu a atrybut href o wartosci "#remove"
       },
     },
     // CODE ADDED START
@@ -146,17 +146,17 @@ g. widget ilosci produktu
 
       //Przypisanie argumentow konstruktora do wlasciwosci obiektu this.Product
       thisProduct.id = id;
-    thisProduct.data = data;
-    thisProduct.name = data.name;
-    thisProduct.amount = 1; // Ustawienie początkowej ilości produktu na 1
-    thisProduct.priceSingle = data.price; // Przechowanie ceny jednostkowej produktu
+      thisProduct.data = data;
+      thisProduct.name = data.name;
+      thisProduct.amount = 1; // Ustawienie początkowej ilości produktu na 1
+      thisProduct.priceSingle = data.price; // Przechowanie ceny jednostkowej produktu
 
-    thisProduct.renderInMenu();
-    thisProduct.getElements();
-    thisProduct.initAccordion();
-    thisProduct.initOrderForm();
-    thisProduct.initAmountWidget();
-    thisProduct.processOrder();
+      thisProduct.renderInMenu();
+      thisProduct.getElements();
+      thisProduct.initAccordion();
+      thisProduct.initOrderForm();
+      thisProduct.initAmountWidget();
+      thisProduct.processOrder();
     }
 
     // 2. Metoda ktora renderuje produkt w menu aplikacji lub na stronie
@@ -245,7 +245,7 @@ g. widget ilosci produktu
       }); // Jesli element ma juz klase 'active' (czyli element-produkt jest juz rozwiniety) to 'classList.toggle()' usunie te klase z elementu co spowoduje ze szczeguly produktu zostana zwiniete.
     } // Jesli element nie ma klasy "active", to 'classList.toggle()' doda te klase do elementu, co spowoduje, ze szczegoly produktu zostana rozwiniete. Produkt, ktory wczesniej nie byl rozwiniety, teraz bedzie rozwiniety.
 
-    //5.  Metoda ktora inicjalizuje formularz zamowienia dla produktu.
+    //5.  Metoda ktora inicjalizuje formularz zamowienia dla  produktu.
     initOrderForm() {
       const thisProduct = this;
 
@@ -363,9 +363,9 @@ g. widget ilosci produktu
       const thisProduct = this;
 
       thisProduct.params = thisProduct.prepareCartProductParams(); // wykorzysatnie wyniku metody ...ProductParams jako wartosc dla wlasciwosci params
-      
+
       const productSummary = {
-        id: thisProduct.id, // identyfikator produktu (id) do obiektu productSummary.
+        id: thisProduct.id, // identyfikator produktuu (id) do obiektu productSummary.
         name: thisProduct.name, //  nazwa produktu (name) do obiektu productSummary.
         amount: thisProduct.amount, //  ilosc produktu (amount) do obiektu productSummary.
         priceSingle: thisProduct.priceSingle,
@@ -515,7 +515,9 @@ g. widget ilosci produktu
       thisCart.dom = {}; // Inicjuje wlasciwosc dom na obiekcie thisCart. dom jest obiektem, ktory bedzie przechowywal referencje do roznych elementów DOM zwiazanych z koszykiem.
 
       thisCart.dom.wrapper = element; // Wyszukuje element DOM, ktory reprezentuje caly kontener koszyka zakupowego (np. <div class="cart">) i przypisuje go do wlasciwosci dom.wrapper.
-      this.dom.productList = this.dom.wrapper.querySelector('.cart__order-summary');
+      this.dom.productList = this.dom.wrapper.querySelector(
+        '.cart__order-summary'
+      );
       thisCart.dom.toggleTrigger = thisCart.dom.wrapper.querySelector(
         //Wyszukuje element DOM, ktory jest odpowiedzialny za akcje przelaczania widocznosci koszyka (np. przycisk otwierajacy/ zamykajacy koszyk) za pomoca selektora select.cart.toggleTrigger. Znaleziony element zostaje przypisany do wlasciwosci dom.toggleTrigger.
         select.cart.toggleTrigger
@@ -536,16 +538,16 @@ g. widget ilosci produktu
     //19.
     add(menuProduct) {
       const thisCart = this;
-    
+
       // Generate HTML based on template and product data
       const generatedHTML = templates.cartProduct(menuProduct);
-    
+
       // Create DOM element from the HTML code
       const generatedDOM = utils.createDOMFromHTML(generatedHTML);
-    
+
       // Add the DOM element to the cart
       thisCart.dom.productList.appendChild(generatedDOM);
-    
+
       thisCart.products.push(menuProduct); // Dodaj produkt do listy produktów w koszyku
     }
   }
