@@ -473,6 +473,11 @@
       thisCart.dom.subtotalPrice.innerHTML = thisCart.subtotalPrice;
       thisCart.dom.totalPrice.innerHTML = thisCart.totalPrice;
       thisCart.dom.deliveryFee.innerHTML = thisCart.deliveryFee;
+
+      console.log( thisCart.totalNumber);
+      console.log( thisCart.subtotalPrice);
+      console.log( thisCart.totalPrice);
+      console.log( thisCart.deliveryFee);
     }
 
     getElements(element) {
@@ -504,13 +509,19 @@
 
     initActions() {
       const thisCart = this;
-
+    
       thisCart.dom.toggleTrigger.addEventListener('click', function (event) {
         event.preventDefault();
         thisCart.dom.wrapper.classList.toggle(classNames.cart.wrapperActive);
       });
+    
       thisCart.dom.productList.addEventListener('updated', function () {
-        thisCart.updatet();
+        thisCart.update();
+      });
+    
+      thisCart.dom.productList.addEventListener('remove', function (event) {
+        const cartProduct = event.detail.cartProduct;
+        thisCart.remove(cartProduct);
       });
     }
 
@@ -526,6 +537,22 @@
       thisCart.products.push(new CartProduct(menuProduct, generatedDOM));
       thisCart.update();
     }
+    remove(CartProduct) {
+      const thisCart = this;
+  
+      // 1. Usunięcie reprezentacji produktu z HTML-a
+      CartProduct.dom.wrapper.remove();
+  
+      // 2. Usunięcie informacji o danym produkcie z tablicy thisCart.products
+      const productIndex = thisCart.products.indexOf(CartProduct);
+      if (productIndex !== -1) {
+        thisCart.products.splice(productIndex, 1);
+      }
+  
+      // 3. Wywołanie metody update w celu przeliczenia sum po usunięciu produktu
+      thisCart.update();
+    }
+  
   }
 
   class CartProduct {
@@ -544,6 +571,7 @@
       // Wywołujemy metodę getElements, przekazując jej argument element
       thisCartProduct.getElements(element);
       thisCartProduct.initAmountWidget();
+      thisCartProduct.initActions();
       // Wyświetlamy thisCartProduct w konsoli
       //console.log(thisCartProduct);
     }
@@ -582,6 +610,35 @@
 
       thisCartProduct.dom.price.innerHTML = thisCartProduct.price;
     }
+    remove() {
+      const thisCartProduct = this;
+      const event = new CustomEvent ('remove', {
+        bubbles: true,
+        detail: {
+          cartProduct: thisCartProduct,
+        }
+      })
+      thisCartProduct.dom.wrapper.dispatchEvent(event);
+     
+    }
+
+
+    initActions() {
+      const thisCartProduct = this;
+  
+      // Listener dla guzika 'remove'
+      thisCartProduct.dom.remove.addEventListener('click', function (event) {
+        event.preventDefault();
+        thisCartProduct.remove();
+      });
+  
+      // Listener dla guzika 'edit'
+      thisCartProduct.dom.edit.addEventListener('click', function (event) {
+        event.preventDefault();
+        // Tu możesz dodać odpowiednią funkcjonalność dla guzika 'edit'
+      });
+    }
+    
   }
 
   const app = {
@@ -625,6 +682,6 @@
     }, // Przypisuje utworzony obiekt Cart do wlasciwosci cart obiektu app (thisApp.cart). Dzieki temu, obiekt Cart bedzie dostepny w innych czesciach aplikacji i bedzie mozna korzystac z jego funkcjonalnosci.
   };
 
-  //24.
+  
   app.init();
 }
