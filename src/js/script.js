@@ -363,7 +363,7 @@ g. widget ilosci produktu
       const thisProduct = this;
       thisProduct.name = thisProduct.data.name;
       thisProduct.amount = thisProduct.amountWidget.defaultValue;
-      
+
       const productSummary = {
         id: thisProduct.id,
         name: thisProduct.data.name,
@@ -374,8 +374,6 @@ g. widget ilosci produktu
       };
       return productSummary;
     }
-
-
 
     //10. podsumowanie wszystkich wybranych opcji
     prepareCartProductParams() {
@@ -416,8 +414,8 @@ g. widget ilosci produktu
       // konstruktor otrzymuje jeden element, ktory reprezentuje element DOM (z initAmountWidget)
       const thisWidget = this;
 
-      console.log('AmountWidget: ', thisWidget); // Wyswietla informacje o biezacej instancji klasy AmountWidget w konsoli przegladarki.
-      console.log('constructor arguments: ', element); // Wyswietla argumenty przekazane do konstruktora w konsoli przegladarki.
+      //console.log('AmountWidget: ', thisWidget); // Wyswietla informacje o biezacej instancji klasy AmountWidget w konsoli przegladarki.
+      //console.log('constructor arguments: ', element); // Wyswietla argumenty przekazane do konstruktora w konsoli przegladarki.
 
       thisWidget.getElements(element); // Wywoluje metode getElements(element) na biezacej instancji klasy AmountWidget, ktora ma na celu znalezienie i zapisanie referencji do roznych elementow widgetu.
       thisWidget.setValue(settings.amountWidget.defaultValue); // Wywoluje metode setValue na biezacej instancji klasy AmountWidget, ktora ma ustawic poczatkowa wartosc widgetu na wartosc domyslna z obiektu settings
@@ -502,12 +500,40 @@ g. widget ilosci produktu
     // Konmstruktor inicjuje nowy koszyk zakupowy, przypisuje mu wlasciwosci oraz metody potrzebne do jego funkcjonowania i wyswietla informacje o nowo utworzonym koszyku w konsoli.
     constructor(element) {
       const thisCart = this;
-
+      this.deliveryFee = settings.cart.defaultDeliveryFee;
+      this.totalNumber = 0;
+      this.subtotalPrice = 0;
       thisCart.products = []; // Utworzenie pustej tablicy w ktorej beda przechowywane produkty dodane do koszyka. Jest to wlasciwosc koszyka.
       thisCart.getElements(element); //  Wywoluje metode getElements na obiekcie koszyka, aby znalezc i zapisac referencje do elementow DOM reprezentujących koszyk. Metoda getElements odpowiedzialna jest za znalezienie i zapisanie referencji do roznych elementow, takich jak przyciski, pola formularza itp., ktore beda wykorzystywane do interakcji z koszykiem.
       thisCart.initActions(); // Wywolanie metody initAction na obiekcie koszyka aby zainicjowac nasluchiwanie na rozne zdarzenia (klikniecie przycisku dodaj do koszyka) i odpowiednio na nie reagowac.
 
-      console.log('new Cart', thisCart);
+      // console.log('new Cart', thisCart);
+      this.update();
+      thisCart.update();
+    }
+    update() {
+      const thisCart = this;
+
+      thisCart.totalNumber = 0;
+      thisCart.subtotalPrice = 0;
+
+      for (const product of thisCart.products) {
+        thisCart.totalNumber += product.amount;
+        thisCart.subtotalPrice += product.price;
+      }
+     // thisCart.totalPrice = thisCart.subtotalPrice + thisCart.deliveryFee;
+
+      if (thisCart.totalNumber > 0) {
+        thisCart.totalPrice = thisCart.subtotalPrice + thisCart.deliveryFee;
+      } else {
+        thisCart.totalPrice = 0;
+      }
+     
+      
+      thisCart.dom.totalNumber.innerHTML = thisCart.totalNumber;
+      thisCart.dom.subtotalPrice.innerHTML = thisCart.subtotalPrice;
+      thisCart.dom.totalPrice.innerHTML = thisCart.totalPrice;
+      thisCart.dom.deliveryFee.innerHTML = thisCart.deliveryFee;
     }
 
     //17. Metoda ktora znajduje i przechowuje elementy DOM, ktore sa zwiazane z koszykiem zakupowym.
@@ -517,12 +543,24 @@ g. widget ilosci produktu
       thisCart.dom = {}; // Inicjuje wlasciwosc dom na obiekcie thisCart. dom jest obiektem, ktory bedzie przechowywal referencje do roznych elementów DOM zwiazanych z koszykiem.
 
       thisCart.dom.wrapper = element; // Wyszukuje element DOM, ktory reprezentuje caly kontener koszyka zakupowego (np. <div class="cart">) i przypisuje go do wlasciwosci dom.wrapper.
-      this.dom.productList = this.dom.wrapper.querySelector(
+      this.dom.productList = thisCart.dom.wrapper.querySelector(
         '.cart__order-summary'
       );
       thisCart.dom.toggleTrigger = thisCart.dom.wrapper.querySelector(
         //Wyszukuje element DOM, ktory jest odpowiedzialny za akcje przelaczania widocznosci koszyka (np. przycisk otwierajacy/ zamykajacy koszyk) za pomoca selektora select.cart.toggleTrigger. Znaleziony element zostaje przypisany do wlasciwosci dom.toggleTrigger.
         select.cart.toggleTrigger
+      );
+      thisCart.dom.deliveryFee = thisCart.dom.wrapper.querySelector(
+        select.cart.deliveryFee
+      );
+      thisCart.dom.subtotalPrice = thisCart.dom.wrapper.querySelector(
+        select.cart.subtotalPrice
+      );
+      thisCart.dom.totalPrice = thisCart.dom.wrapper.querySelector(
+        select.cart.totalPrice
+      );
+      thisCart.dom.totalNumber = thisCart.dom.wrapper.querySelector(
+        select.cart.totalNumber
       );
     }
 
@@ -550,17 +588,76 @@ g. widget ilosci produktu
       // Add the DOM element to the cart
       thisCart.dom.productList.appendChild(generatedDOM);
 
-      thisCart.products.push(menuProduct); // Dodaj produkt do listy produktów w koszyku
-      console.log(' thisCart.products',  thisCart.products);
+      thisCart.products.push(new CartProduct(menuProduct, generatedDOM));
+      thisCart.update(); // Dodaj wywołanie metody update po dodaniu produktu do koszyka
     }
   }
 
+  class CartProduct {
+    constructor(menuProduct, element) {
+      // Zapisujemy referencję do obiektu this
+      const thisCartProduct = this;
+      this.amount = 1; // Domyślna ilość sztuk produktu
+      this.price = this.priceSingle;
+      // Przypisujemy właściwości z menuProduct do pojedynczych właściwości klasy CartProduct
+      thisCartProduct.id = menuProduct.id;
+      thisCartProduct.name = menuProduct.name;
+      thisCartProduct.price = menuProduct.price;
+      thisCartProduct.priceSingle = menuProduct.priceSingle;
+      thisCartProduct.amount = menuProduct.amount;
+
+      // Wywołujemy metodę getElements, przekazując jej argument element
+      thisCartProduct.getElements(element);
+      thisCartProduct.initAmountWidget();
+      // Wyświetlamy thisCartProduct w konsoli
+      //console.log(thisCartProduct);
+    }
+    getElements(element) {
+      const thisCartProduct = this;
+      thisCartProduct.dom = {};
+      thisCartProduct.dom.wrapper = element;
+      thisCartProduct.dom.amountWidget = element.querySelector(
+        select.cartProduct.amountWidget
+      );
+      thisCartProduct.dom.price = element.querySelector(
+        select.cartProduct.price
+      );
+      thisCartProduct.dom.edit = element.querySelector(select.cartProduct.edit);
+      thisCartProduct.dom.remove = element.querySelector(
+        select.cartProduct.remove
+      );
+    }
+    initAmountWidget() {
+      const thisCartProduct = this;
+
+      thisCartProduct.amountWidget = new AmountWidget(
+        thisCartProduct.dom.amountWidget
+      ); // Tworzymy instancję klasy AmountWidget przekazując odpowiedni element HTML
+
+      thisCartProduct.dom.amountWidget.addEventListener('updated', function () {
+        thisCartProduct.amount = thisCartProduct.amountWidget.value; // Aktualizujemy właściwość amount na podstawie wartości widgetu liczby sztuk
+        thisCartProduct.price =
+          thisCartProduct.priceSingle * thisCartProduct.amount; // Aktualizujemy cenę na podstawie ceny pojedynczej sztuki i ilości sztuk
+        thisCartProduct.dom.price.innerHTML = thisCartProduct.price; // Aktualizujemy cenę na stronie, w odpowiednim elemencie HTML
+        app.cart.update(); // Aktualizujemy cały koszyk, żeby uwzględnić zmiany w cenie tego produktu
+      });
+    }
+    updatePrice() {
+      // Aktualizacja ceny produktu na stronie HTML
+      const thisCartProduct = this;
+
+      thisCartProduct.dom.price.innerHTML = thisCartProduct.price; // Ustawienie nowej ceny produktu w HTML
+    }
+
+    // Pozostała część klasy CartProduct będzie zawierała pozostałe metody
+    // i definicje potrzebne do jej funkcjonowania.
+  }
   // Do obiektu..
   const app = {
     // 20. Metoda odpowiedzialna za inicjacje menu aplikacji a konkretnie tworzenie produktow na podstawie danych znajdujacych sie w thisApp.data.products.
     initMenu: function () {
       const thisApp = this; // Tworze lokalna zmienna thisApp, ktora przechowuje referencje do obiektu app
-      console.log('thisApp.data:', thisApp.data);
+      //console.log('thisApp.data:', thisApp.data);
       for (let productData in thisApp.data.products) {
         // w pętli iteruje przez wszystkie produkty znajdujace sie w thisApp.data.products. Dla kazdego produktu wykonuje sie następujące czynności:
         new Product(productData, thisApp.data.products[productData]); // Tworzy nowa instancje klasy Product za pomocą new Product(). Przy tworzeniu instancji przekazuje sie dwa argumenty: productData (klucz) oraz thisApp.data.products[productData] (wartosc). productData to identyfikator produktu, a thisApp.data.products[productData] to obiekt z danymi tego produktu. Klasa Product sluzy do reprezentacji i interakcji z pojedynczym produktem na stronie.
@@ -577,11 +674,11 @@ g. widget ilosci produktu
     //22. Metoda ta jest glownym punktem inicjalizacji calej aplikacji
     init: function () {
       const thisApp = this; // Referencja do obiektu app
-      console.log('*** App starting ***');
-      console.log('thisApp:', thisApp);
-      console.log('classNames:', classNames);
-      console.log('settings:', settings);
-      console.log('templates:', templates);
+      //  console.log('*** App starting ***');
+      // console.log('thisApp:', thisApp);
+      // console.log('classNames:', classNames);
+      // console.log('settings:', settings);
+      // console.log('templates:', templates);
 
       thisApp.initData(); // Inicjalizacja danych
       thisApp.initMenu(); // Inicjalizacja Menu
