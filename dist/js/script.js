@@ -4,11 +4,9 @@
   ('use strict');
 
   const select = {
-    // obiekt o nazwie select w ktorym jest kolejny obiekt(wlasciwosc select) ktory ma 2 wlasciwosci
-    // selektor CSS identyfikujacy element na stronie HTML
     templateOf: {
       menuProduct: '#template-menu-product',
-      cartProduct: '#template-cart-product', // CODE ADDED
+      cartProduct: '#template-cart-product',
     },
     containerOf: {
       menu: '#product-list',
@@ -29,12 +27,12 @@
     },
     widgets: {
       amount: {
-        input: 'input.amount', // CODE CHANGED
+        input: 'input.amount',
         linkDecrease: 'a[href="#less"]',
-        linkIncrease: 'a[href="#more"]', // elementu a atrybut href o wartosci "#remove"
+        linkIncrease: 'a[href="#more"]',
       },
     },
-    // CODE ADDED START
+
     cart: {
       productList: '.cart__order-summary',
       toggleTrigger: '.cart__summary',
@@ -52,9 +50,8 @@
       amountWidget: '.widget-amount',
       price: '.cart__product-price',
       edit: '[href="#edit"]',
-      remove: '[href="#remove"]', // atrybut href o wartosci "#remove"
+      remove: '[href="#remove"]',
     },
-    // CODE ADDED END
   };
 
   const classNames = {
@@ -69,7 +66,6 @@
     // CODE ADDED END
   };
 
-  // Obiekt settings zawiera wlasciwosc 'amountWidget', ktora jest kolejnym obiektem posiadajacym trzy klucze o wartosciach odpowiednie 1, 1, 9
   const settings = {
     amountWidget: {
       defaultValue: 1,
@@ -94,50 +90,6 @@
     ),
     // CODE ADDED END
   };
-
-  /* PLAN DZIALANIA ALGORYTMU
-1. wywolanie metod w klasie product
-
-2. renderowanie
-a. znajduje wybrany kod HTML 
-b. konwerteruje na element DOM czyli obiekt JS
-c. szukam w document kontenera menu
-d. dodaje na koniec kontenera menu jako obiekt JS
-
-3. zlokalzowanie i przypisanie do wlasciwego obiektu elementow DOM - konkretny produkt na stronie.
-a. accordionTrigger
-b. selektor wyszukujacy i wskazuje na element HTML np formularza produktu
-c. formularz
-d. button
-e. cena produktu na stronie
-f. kontener do obrazow produktu
-g. widget ilosci produktu
-
-4. Metoda ktora inicjalizuje akordeon dla elementow produktow
-5. Metoda ktora inicjalizuje formularz zamowienia dla produktu.
-6. WYWOLANIE METODY ktora przetwarza zamowienie produktu, czyli oblicza cene, wybrane opcje itp.
-7. Metoda ktora INICJALIZUJE widget do wybierania ilosci produktu
-8. 
-9.
-10.
-
-11. Klasa AmountWidget
-12. Metoda odpowiedzialna za przypisanie odpowiednich elementow DOM do wlasciwosci obiektu klasy 'AmountWidget
-13. Metoda odpowiada za ustawienie nowej wartosci dla widgetu liczby
-14. Metoda ktora inicjuje dzialanie widgetu liczby
-15. Metoda sluzy do powiadamiania innych komponentow ze wartosc widgetu liczby zostala z aktualizowana
-
-16. Klasa reprezentuje koszyk zakupowy
-17. Metoda ktora znajduje i przechowuje elementy DOM, ktore sa zwiazane z koszykiem zakupowym.
-18. Metoda sluzy do inicjowania akcji nasluchiwania zdarzen aktywacje lub dezaktywacje koszyka zakupowego
-19. 
-20. Metoda odpowiedzialna za inicjacje menu aplikacji
-21. Metoda inicjujaca dane w aplikacji
-22. Metoda ta jest glownym punktem inicjalizacji calej aplikacji
-23. Metoda sluzy do inicjalizacji koszyka zakupow.
-
-24. Odpalenie all
-*/
 
   class Product {
     // Konstruktor klasy
@@ -408,7 +360,6 @@ g. widget ilosci produktu
     }
   }
 
-  //11.
   class AmountWidget {
     constructor(element) {
       // konstruktor otrzymuje jeden element, ktory reprezentuje element DOM (z initAmountWidget)
@@ -422,27 +373,21 @@ g. widget ilosci produktu
       thisWidget.initAction(thisWidget.input.element); // Wywoluje metode initAction na biezacej instancji klasy AmountWidget, ktora unicjuje akcje widgetu
     }
 
-    //12. Metoda odpowiedzialna za przypisanie odpowiednich elementow DOM do wlasciwosci obiektu klasy 'AmountWidget' dzieki czemu moge pozniej uzywac elementow do innych akcji funkcji zwiazanych z dzialaniem widgetu liczby
     getElements(element) {
-      // element jest elementem DOM z initAmountWidget
       const thisWidget = this;
 
-      thisWidget.element = element; //Przypisuje argument 'element' do wlasciwosci 'element' obiektu klasy AmountWidget. Dzieki temu, thisWidget.element przechowuje referencje do elementu DOM, ktory reprezentuje widget liczby.
+      thisWidget.element = element;
       thisWidget.input = thisWidget.element.querySelector(
-        // Szukam elemenmtow inputu wewnatrz widgetu
         select.widgets.amount.input
       );
       thisWidget.linkDecrease = thisWidget.element.querySelector(
-        // to wlasciwosci obiektu klasy AmountWidget, ktora przechowuje referencje do odpowiednich elementów wewnątrz widgetu liczby.
         select.widgets.amount.linkDecrease
       );
       thisWidget.linkIncrease = thisWidget.element.querySelector(
-        // to wlasciwosci obiektu klasy AmountWidget, ktora przechowuje referencje do odpowiednich elementów wewnątrz widgetu liczby.
         select.widgets.amount.linkIncrease
       );
     }
 
-    //13. Metoda odpowiada za ustawienie nowej wartosci dla widgetu liczby, sprawdzajac przy tym czy wartosc miesci sie w okreslonym zakresie i aktualizuje pola input na stronie aby odzwierciedlac nowa wartosc i wywoluje metode announce ().
     setValue(value) {
       const thisWidget = this; // zmienna lokalna ktora odnosi sie do biezacej instacji klasy AmountWidget
 
@@ -464,7 +409,6 @@ g. widget ilosci produktu
       thisWidget.announce(); //  Wywołuje metode announce() klasy AmountWidget, ktora ma za zadanie poinformować innych, ze wartosc widgetu zostala zmieniona.
     }
 
-    //14. Metoda ktora inicjuje dzialanie widgetu liczby, dodajac nasluchiwanie na rozne zdarzenia, ktore pozwalaja uzytkownikowi zmieniac wartosc w polu input oraz klikajac przyciski zmiany ilosci. Kiedy uzytkownik wprowadzi zmiane w polu input lub kliknie na przyciski zmiany ilosci, zostana wywolane odpowiednie funkcje anonimowe, ktore wywolaja metode thisWidget.setValue() w celu aktualizacji wartosci widgetu liczby.
     initAction() {
       const thisWidget = this;
 
@@ -486,28 +430,25 @@ g. widget ilosci produktu
       });
     }
 
-    // 15. Metoda sluzy do powiadamiania innych komponentow lub modulow, ze wartosc widgetu liczby zostala z aktualizowana.
     announce() {
       const thisWidget = this;
 
-      const event = new Event('updated'); // do stalej event przypisuje tworzony nowy obiekt o zdarzeniu 'update'
-      thisWidget.element.dispatchEvent(event); // Wywoluje zdarzenie "updated" na elemencie thisWidget.element, czyli na elemencie DOM, ktory reprezentuje widget liczby. Metoda dispatchEvent() jest metoda wbudowana, ktora słuzy do wywolywania zdarzen na elemencie. W tym przypadku, wywolanie dispatchEvent(event) powoduje uruchomienie zdarzenia "updated" na elemencie widgetu liczby.
-    } // Za pomoca tego mechanizmu, inne czesci aplikacji lub komponenty moga nasluchiwac na zdarzenie "updated" na elemencie widgetu liczby i reagowac na zmiany wartosci tego widgetu. To pozwala na rozdzielenie odpowiedzialnosci miedzy roznymi czesciami aplikacji, dzieki czemu mozna w latwy sposob reagowac na zmiany wartosci w innych czesciach kodu. Na przyklad, moze to byc wykorzystane do aktualizacji koszyka zakupow w momencie zmiany ilosci produktu lub do odswieżania ceny zamowienia po zmianie ilosci produktow w koszyku.
+      const event = new CustomEvent('updated', { bubble: true });
+      thisWidget.element.dispatchEvent(event);
+    }
   }
 
-  // 16. Klasa reprezentuje koszyk zakupowy
   class Cart {
-    // Konmstruktor inicjuje nowy koszyk zakupowy, przypisuje mu wlasciwosci oraz metody potrzebne do jego funkcjonowania i wyswietla informacje o nowo utworzonym koszyku w konsoli.
     constructor(element) {
       const thisCart = this;
       this.deliveryFee = settings.cart.defaultDeliveryFee;
       this.totalNumber = 0;
       this.subtotalPrice = 0;
-      thisCart.products = []; // Utworzenie pustej tablicy w ktorej beda przechowywane produkty dodane do koszyka. Jest to wlasciwosc koszyka.
-      thisCart.getElements(element); //  Wywoluje metode getElements na obiekcie koszyka, aby znalezc i zapisac referencje do elementow DOM reprezentujących koszyk. Metoda getElements odpowiedzialna jest za znalezienie i zapisanie referencji do roznych elementow, takich jak przyciski, pola formularza itp., ktore beda wykorzystywane do interakcji z koszykiem.
-      thisCart.initActions(); // Wywolanie metody initAction na obiekcie koszyka aby zainicjowac nasluchiwanie na rozne zdarzenia (klikniecie przycisku dodaj do koszyka) i odpowiednio na nie reagowac.
 
-      // console.log('new Cart', thisCart);
+      thisCart.products = [];
+      thisCart.getElements(element);
+      thisCart.initActions();
+
       this.update();
       thisCart.update();
     }
@@ -521,22 +462,19 @@ g. widget ilosci produktu
         thisCart.totalNumber += product.amount;
         thisCart.subtotalPrice += product.price;
       }
-     // thisCart.totalPrice = thisCart.subtotalPrice + thisCart.deliveryFee;
 
       if (thisCart.totalNumber > 0) {
         thisCart.totalPrice = thisCart.subtotalPrice + thisCart.deliveryFee;
       } else {
         thisCart.totalPrice = 0;
       }
-     
-      
+
       thisCart.dom.totalNumber.innerHTML = thisCart.totalNumber;
       thisCart.dom.subtotalPrice.innerHTML = thisCart.subtotalPrice;
       thisCart.dom.totalPrice.innerHTML = thisCart.totalPrice;
       thisCart.dom.deliveryFee.innerHTML = thisCart.deliveryFee;
     }
 
-    //17. Metoda ktora znajduje i przechowuje elementy DOM, ktore sa zwiazane z koszykiem zakupowym.
     getElements(element) {
       const thisCart = this;
 
@@ -564,32 +502,29 @@ g. widget ilosci produktu
       );
     }
 
-    //18. Metoda sluzy do inicjowania akcji nasluchiwania zdarzen na elemencie reprezentujacym aktywacje lub dezaktywacje koszyka zakupowego. Dzieki tej metodzie uzytkownik bedzie mogl otworzyc i zamknac koszyk poprzez klikniecie odpowiedniego przycisku.
     initActions() {
       const thisCart = this;
 
       thisCart.dom.toggleTrigger.addEventListener('click', function (event) {
-        //Dodaje nasluchiwanie na zdarzenie 'click' dla elementu dom.toggleTrigger, ktory zostal wczesniej zidentyfikowany w metodzie getElements(). Klikniecie tego elementu bedzie aktywowane przez uzytkownika, aby otworzyc lub zamknac koszyk.
-        event.preventDefault(); // Zabklokowanie domyslnej funkcji scroll up
-        thisCart.dom.wrapper.classList.toggle(classNames.cart.wrapperActive); // Wywoluje sie metoda classList.toggle() na wlasciwosci dom.wrapper, ktora przechowuje element reprezentujacy caly kontener koszyka zakupowego (np. <div class="cart">). Metoda toggle() dodaje klase classNames.cart.wrapperActive, jesli jej nie ma, lub usuwa ja, jesli juz istnieje. classNames.cart.wrapperActive jest wczesniej zdefiniowana klasa CSS, ktora odpowiada za aktywnosc koszyka, np. wyswietlanie go lub ukrywanie.
+        event.preventDefault();
+        thisCart.dom.wrapper.classList.toggle(classNames.cart.wrapperActive);
+      });
+      thisCart.dom.productList.addEventListener('updated', function () {
+        thisCart.updatet();
       });
     }
 
-    //19.
     add(menuProduct) {
       const thisCart = this;
 
-      // Generate HTML based on template and product data
       const generatedHTML = templates.cartProduct(menuProduct);
 
-      // Create DOM element from the HTML code
       const generatedDOM = utils.createDOMFromHTML(generatedHTML);
 
-      // Add the DOM element to the cart
       thisCart.dom.productList.appendChild(generatedDOM);
 
       thisCart.products.push(new CartProduct(menuProduct, generatedDOM));
-      thisCart.update(); // Dodaj wywołanie metody update po dodaniu produktu do koszyka
+      thisCart.update();
     }
   }
 
@@ -643,16 +578,12 @@ g. widget ilosci produktu
       });
     }
     updatePrice() {
-      // Aktualizacja ceny produktu na stronie HTML
       const thisCartProduct = this;
 
-      thisCartProduct.dom.price.innerHTML = thisCartProduct.price; // Ustawienie nowej ceny produktu w HTML
+      thisCartProduct.dom.price.innerHTML = thisCartProduct.price;
     }
-
-    // Pozostała część klasy CartProduct będzie zawierała pozostałe metody
-    // i definicje potrzebne do jej funkcjonowania.
   }
-  // Do obiektu..
+
   const app = {
     // 20. Metoda odpowiedzialna za inicjacje menu aplikacji a konkretnie tworzenie produktow na podstawie danych znajdujacych sie w thisApp.data.products.
     initMenu: function () {
@@ -697,15 +628,3 @@ g. widget ilosci produktu
   //24.
   app.init();
 }
-/*Tworzy lokalna zmienna thisApp, ktora przechowuje referencję do obiektu app. To pozwala na odwolywanie sie do obiektu app wewnatrz metody za pomoca krotszej nazwy thisApp.
-
-Wyswietla w konsoli komunikat "App starting" oraz rozne informacje o aplikacji, takie jak thisApp.data (dane aplikacji), classNames (klasy CSS), settings (ustawienia aplikacji) i templates (szablony Handlebars). Te informacje sa pomocne podczas debugowania i pozwalaja sprawdzic, czy dane sa wczytane poprawnie.
-
-Wywoluje thisApp.initData() - inicjalizuje dane aplikacji, ktore sa przechowywane w obiekcie dataSource. Wczesniej dane zostaly zaladowane do thisApp.data.
-
-Wywoluje thisApp.initMenu() - inicjalizuje menu aplikacji. Ta metoda tworzy produkty na podstawie danych z thisApp.data.products i renderuje je na stronie.
-
-Wywoluje thisApp.initCart() - inicjalizuje koszyk zakupow. Ta metoda tworzy obiekt Cart i przypisuje go do wlasciwosci cart obiektu app.
-
-Po wywolaniu app.init(), aplikacja jest w pelni zainicjalizowana i gotowa do dzialania. Produkty sa wyswietlane w menu, a koszyk zakupow jest gotowy do przechowywania produktow. Aplikacja jest gotowa do obslugi interakcji uzytkownika i wykonywania roznych akcji na produktach i w koszyku zakupow.
-*/
