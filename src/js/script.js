@@ -490,7 +490,7 @@ g. widget ilosci produktu
     announce() {
       const thisWidget = this;
 
-      const event = new Event('updated'); // do stalej event przypisuje tworzony nowy obiekt o zdarzeniu 'update'
+      const event = new CustomEvent('updated', {bubble: true}); // do stalej event przypisuje tworzony nowy obiekt o zdarzeniu 'update'
       thisWidget.element.dispatchEvent(event); // Wywoluje zdarzenie "updated" na elemencie thisWidget.element, czyli na elemencie DOM, ktory reprezentuje widget liczby. Metoda dispatchEvent() jest metoda wbudowana, ktora słuzy do wywolywania zdarzen na elemencie. W tym przypadku, wywolanie dispatchEvent(event) powoduje uruchomienie zdarzenia "updated" na elemencie widgetu liczby.
     } // Za pomoca tego mechanizmu, inne czesci aplikacji lub komponenty moga nasluchiwac na zdarzenie "updated" na elemencie widgetu liczby i reagowac na zmiany wartosci tego widgetu. To pozwala na rozdzielenie odpowiedzialnosci miedzy roznymi czesciami aplikacji, dzieki czemu mozna w latwy sposob reagowac na zmiany wartosci w innych czesciach kodu. Na przyklad, moze to byc wykorzystane do aktualizacji koszyka zakupow w momencie zmiany ilosci produktu lub do odswieżania ceny zamowienia po zmianie ilosci produktow w koszyku.
   }
@@ -572,6 +572,9 @@ g. widget ilosci produktu
         //Dodaje nasluchiwanie na zdarzenie 'click' dla elementu dom.toggleTrigger, ktory zostal wczesniej zidentyfikowany w metodzie getElements(). Klikniecie tego elementu bedzie aktywowane przez uzytkownika, aby otworzyc lub zamknac koszyk.
         event.preventDefault(); // Zabklokowanie domyslnej funkcji scroll up
         thisCart.dom.wrapper.classList.toggle(classNames.cart.wrapperActive); // Wywoluje sie metoda classList.toggle() na wlasciwosci dom.wrapper, ktora przechowuje element reprezentujacy caly kontener koszyka zakupowego (np. <div class="cart">). Metoda toggle() dodaje klase classNames.cart.wrapperActive, jesli jej nie ma, lub usuwa ja, jesli juz istnieje. classNames.cart.wrapperActive jest wczesniej zdefiniowana klasa CSS, ktora odpowiada za aktywnosc koszyka, np. wyswietlanie go lub ukrywanie.
+      });
+      thisCart.dom.productList.addEventListener('updated', function(){
+        thisCart.updatet();
       });
     }
 
