@@ -36,7 +36,7 @@
     cart: {
       productList: '.cart__order-summary',
       toggleTrigger: '.cart__summary',
-      totalNumber: `.cart__total-number`,
+      totalNumber: '.cart__total-number',
       totalPrice:
         '.cart__total-price strong, .cart__order-total .cart__order-price-sum strong',
       subtotalPrice: '.cart__order-subtotal .cart__order-price-sum strong',
@@ -76,7 +76,12 @@
     cart: {
       defaultDeliveryFee: 20,
     },
-    // CODE ADDED END
+
+    db: {
+      url: '//localhost:3131',
+      products: 'products',
+      orders: 'orders',
+    },
   };
 
   const templates = {
@@ -92,7 +97,6 @@
   };
 
   class Product {
-    // Konstruktor klasy
     constructor(id, data) {
       const thisProduct = this; // odniesienie do bierzacej instancji klasy
 
@@ -111,7 +115,6 @@
       thisProduct.processOrder();
     }
 
-    // 2. Metoda ktora renderuje produkt w menu aplikacji lub na stronie
     renderInMenu() {
       const thisProduct = this;
 
@@ -131,8 +134,6 @@
       //kod znajduje odpowiedni kontener menu na stronie, a nastepnie dodaje do niego wygenerowany element produktu, ktory zostal wczesniej utworzony i przechowywany w thisProduct.element. Dzieki temu produkt jest wyswietlany w menu i jest gotowy do interakcji z uzytkownikiem.
     }
 
-    //3. Metoda ktora pobiera i zapisuje referencje do roznych elementow HTML reprezentujacych produkt (np przyciski, pola fromularza)
-    // Metoda ma na celu zlokalzowanie i przypisanie do wlasciwego obiektu 'thisProduct' roznych elementow DOM ktore sa zwiazane z konkretnym produktem na stronie.
     getElements() {
       const thisProduct = this; // umozliwia to odwolanie sie do biezacej instancji uzywajac krotszej nazwy 'thisProduct'
 
@@ -173,7 +174,6 @@
       );
     }
 
-    //4. Metoda ktora inicjalizuje akordeon dla elementow produktow. Akordeon jest rodzajem interaktywnego komponentu, ktory pozwala na rozwijanie i zwijanie sekcji na stronie.
     initAccordion() {
       const thisProduct = this;
 
@@ -195,9 +195,7 @@
 
         thisProduct.element.classList.toggle('active'); // sprowadza czy element 'this.Product.element' (czyli biezacy produkt) ma klase 'active'
       }); // Jesli element ma juz klase 'active' (czyli element-produkt jest juz rozwiniety) to 'classList.toggle()' usunie te klase z elementu co spowoduje ze szczeguly produktu zostana zwiniete.
-    } // Jesli element nie ma klasy "active", to 'classList.toggle()' doda te klase do elementu, co spowoduje, ze szczegoly produktu zostana rozwiniete. Produkt, ktory wczesniej nie byl rozwiniety, teraz bedzie rozwiniety.
-
-    //5.  Metoda ktora inicjalizuje formularz zamowienia dla  produktu.
+    }
     initOrderForm() {
       const thisProduct = this;
 
@@ -474,23 +472,23 @@
       thisCart.dom.totalPrice.innerHTML = thisCart.totalPrice;
       thisCart.dom.deliveryFee.innerHTML = thisCart.deliveryFee;
 
-      console.log( thisCart.totalNumber);
-      console.log( thisCart.subtotalPrice);
-      console.log( thisCart.totalPrice);
-      console.log( thisCart.deliveryFee);
+      console.log(thisCart.totalNumber);
+      console.log(thisCart.subtotalPrice);
+      console.log(thisCart.totalPrice);
+      console.log(thisCart.deliveryFee);
     }
 
     getElements(element) {
       const thisCart = this;
 
-      thisCart.dom = {}; // Inicjuje wlasciwosc dom na obiekcie thisCart. dom jest obiektem, ktory bedzie przechowywal referencje do roznych elementów DOM zwiazanych z koszykiem.
+      thisCart.dom = {};
 
-      thisCart.dom.wrapper = element; // Wyszukuje element DOM, ktory reprezentuje caly kontener koszyka zakupowego (np. <div class="cart">) i przypisuje go do wlasciwosci dom.wrapper.
-      this.dom.productList = thisCart.dom.wrapper.querySelector(
-        '.cart__order-summary'
+      thisCart.dom.wrapper = element;
+
+      thisCart.dom.productList = thisCart.dom.wrapper.querySelector(
+        select.cart.productList
       );
       thisCart.dom.toggleTrigger = thisCart.dom.wrapper.querySelector(
-        //Wyszukuje element DOM, ktory jest odpowiedzialny za akcje przelaczania widocznosci koszyka (np. przycisk otwierajacy/ zamykajacy koszyk) za pomoca selektora select.cart.toggleTrigger. Znaleziony element zostaje przypisany do wlasciwosci dom.toggleTrigger.
         select.cart.toggleTrigger
       );
       thisCart.dom.deliveryFee = thisCart.dom.wrapper.querySelector(
@@ -505,25 +503,81 @@
       thisCart.dom.totalNumber = thisCart.dom.wrapper.querySelector(
         select.cart.totalNumber
       );
+      thisCart.dom.form = thisCart.dom.wrapper.querySelector(
+        select.cart.form
+      );
     }
 
     initActions() {
       const thisCart = this;
-    
+
       thisCart.dom.toggleTrigger.addEventListener('click', function (event) {
         event.preventDefault();
         thisCart.dom.wrapper.classList.toggle(classNames.cart.wrapperActive);
       });
-    
+
       thisCart.dom.productList.addEventListener('updated', function () {
         thisCart.update();
       });
-    
+
       thisCart.dom.productList.addEventListener('remove', function (event) {
         const cartProduct = event.detail.cartProduct;
         thisCart.remove(cartProduct);
       });
+
+      thisCart.dom.form.addEventListener('submit', function (event) {
+        event.preventDefault();
+        thisCart.sendOrder();
+      });
+
+      thisCart.dom.form.addEventListener('submit', function (event) {
+        event.preventDefault(); // Blokujemy domyślne zachowanie formularza (przeładowanie strony)
+
+        thisCart.sendOrder(); 
+        
+      });
     }
+
+    sendOrder() {
+      const thisCart = this;
+      const url = settings.db.url + '/' + settings.db.orders;
+      const payload = {
+        address: thisCart.dom.form.querySelector(select.cart.address).value,
+        phone: thisCart.dom.form.querySelector(select.cart.phone).value,
+        totalPrice: thisCart.totalPrice,
+        subtotalPrice: thisCart.subtotalPrice,
+        totalNumber: thisCart.totalNumber,
+        deliveryFee: thisCart.deliveryFee,
+        products: [],
+    }
+    for(let prod of thisCart.products) {
+      payload.products.push(prod.getData());
+    }
+    
+    for (const cartProduct of thisCart.products) {
+      const productData = cartProduct.getData(); // Pobierz dane produktu z koszyka
+      payload.products.push(productData); // Dodaj dane produktu do listy produktów w zamówieniu
+    }
+    const options = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload), // Wyślij dane zamówienia jako JSON
+    };
+    console.log('Payload:', payload);
+
+    // Wysłanie zamówienia na serwer za pomocą zapytania POST
+    fetch(url, options)
+    .then(function(response){
+      return response.json();
+    }) .then(function(parsedResponse){
+      console.log('parsedResponse', parsedResponse);
+    });
+  }
+
+
+
 
     add(menuProduct) {
       const thisCart = this;
@@ -539,20 +593,19 @@
     }
     remove(CartProduct) {
       const thisCart = this;
-  
+
       // 1. Usunięcie reprezentacji produktu z HTML-a
       CartProduct.dom.wrapper.remove();
-  
+
       // 2. Usunięcie informacji o danym produkcie z tablicy thisCart.products
       const productIndex = thisCart.products.indexOf(CartProduct);
       if (productIndex !== -1) {
         thisCart.products.splice(productIndex, 1);
       }
-  
+
       // 3. Wywołanie metody update w celu przeliczenia sum po usunięciu produktu
       thisCart.update();
     }
-  
   }
 
   class CartProduct {
@@ -561,7 +614,8 @@
       const thisCartProduct = this;
       this.amount = 1; // Domyślna ilość sztuk produktu
       this.price = this.priceSingle;
-      // Przypisujemy właściwości z menuProduct do pojedynczych właściwości klasy CartProduct
+     
+
       thisCartProduct.id = menuProduct.id;
       thisCartProduct.name = menuProduct.name;
       thisCartProduct.price = menuProduct.price;
@@ -612,35 +666,44 @@
     }
     remove() {
       const thisCartProduct = this;
-      const event = new CustomEvent ('remove', {
+      const event = new CustomEvent('remove', {
         bubbles: true,
         detail: {
           cartProduct: thisCartProduct,
-        }
-      })
+        },
+      });
       thisCartProduct.dom.wrapper.dispatchEvent(event);
-     
     }
-
 
     initActions() {
       const thisCartProduct = this;
-  
+
       // Listener dla guzika 'remove'
       thisCartProduct.dom.remove.addEventListener('click', function (event) {
         event.preventDefault();
         thisCartProduct.remove();
       });
-  
+
       // Listener dla guzika 'edit'
       thisCartProduct.dom.edit.addEventListener('click', function (event) {
         event.preventDefault();
         // Tu możesz dodać odpowiednią funkcjonalność dla guzika 'edit'
       });
     }
-    
-  }
 
+    getData() {
+      const data = {
+        id: this.id,
+        amount: this.amount,
+        price: this.price,
+        priceSingle: this.priceSingle,
+        name: this.name,
+        
+      };
+  
+      return data;
+  }
+  }
   const app = {
     // 20. Metoda odpowiedzialna za inicjacje menu aplikacji a konkretnie tworzenie produktow na podstawie danych znajdujacych sie w thisApp.data.products.
     initMenu: function () {
@@ -648,40 +711,45 @@
       //console.log('thisApp.data:', thisApp.data);
       for (let productData in thisApp.data.products) {
         // w pętli iteruje przez wszystkie produkty znajdujace sie w thisApp.data.products. Dla kazdego produktu wykonuje sie następujące czynności:
-        new Product(productData, thisApp.data.products[productData]); // Tworzy nowa instancje klasy Product za pomocą new Product(). Przy tworzeniu instancji przekazuje sie dwa argumenty: productData (klucz) oraz thisApp.data.products[productData] (wartosc). productData to identyfikator produktu, a thisApp.data.products[productData] to obiekt z danymi tego produktu. Klasa Product sluzy do reprezentacji i interakcji z pojedynczym produktem na stronie.
+        new Product(
+          thisApp.data.products[productData].id,
+          thisApp.data.products[productData]
+        ); // Tworzy nowa instancje klasy Product za pomocą new Product(). Przy tworzeniu instancji przekazuje sie dwa argumenty: productData (klucz) oraz thisApp.data.products[productData] (wartosc). productData to identyfikator produktu, a thisApp.data.products[productData] to obiekt z danymi tego produktu. Klasa Product sluzy do reprezentacji i interakcji z pojedynczym produktem na stronie.
       }
     },
 
-    //21 Metoda inicjujaca dane w aplikacji
     initData: function () {
-      const thisApp = this; // Tworze lokalna zmienna thisApp, ktora przechowuje referencje do obiektu app. Jest to pomocne, poniewaz wewnatrz metody zmienna this może wskazywac na inny obiekt, dlatego warto utworzyc zmienna thisApp dla zachowania spojnosci.
+      const thisApp = this;
 
-      thisApp.data = dataSource; // Przypisuje do wlasciwosci thisApp.data caly obiekt dataSource. Obiekt dataSource zawiera wszystkie dane potrzebne do funkcjonowania aplikacji, takie jak produkty, kategorie, ceny, itp.
+      thisApp.data = {};
+      const url = settings.db.url + '/' + settings.db.products;
+      fetch(url)
+        .then(function (rawResponse) {
+          return rawResponse.json();
+        })
+        .then(function (parsedResponse) {
+          thisApp.data.products = parsedResponse; // zmiana na obiekt products z właściwością "id"
+          console.log('parsedResponse', thisApp.data.products);
+          thisApp.initMenu(); // Wywołujemy init
+          console.log('parsedResponse', parsedResponse);
+        });
+      console.log('thisApp.data', JSON.stringify(thisApp.data));
     },
 
-    //22. Metoda ta jest glownym punktem inicjalizacji calej aplikacji
     init: function () {
-      const thisApp = this; // Referencja do obiektu app
-      //  console.log('*** App starting ***');
-      // console.log('thisApp:', thisApp);
-      // console.log('classNames:', classNames);
-      // console.log('settings:', settings);
-      // console.log('templates:', templates);
+      const thisApp = this;
 
-      thisApp.initData(); // Inicjalizacja danych
-      thisApp.initMenu(); // Inicjalizacja Menu
-      thisApp.initCart(); // Inicjalizacja koszyka
+      thisApp.initData();
+      thisApp.initCart();
     },
 
-    //23. Metoda sluzy do inicjalizacji koszyka zakupow. Dzieki temu, koszyk jest gotowy do uzycia i bedzie dzialal poprawnie w calej aplikacji.
     initCart: function () {
-      const thisApp = this; // Referencja do obiektu app
+      const thisApp = this;
 
-      const cartElem = document.querySelector(select.containerOf.cart); // Znajduje element na stronie HTML, ktory bedzie kontenerem dla koszyka zakupow. Wykorzystuje do tego selektor select.containerOf.cart, ktory wskazuje na odpowiedni element na stronie.
-      thisApp.cart = new Cart(cartElem); // Tworzy nowy obiekt Cart, ktory reprezentuje KOSZYK ZAKUPOW. Jako argument przekazuje znaleziony element cartElem, ktory bedzie kontenerem dla koszyka.
-    }, // Przypisuje utworzony obiekt Cart do wlasciwosci cart obiektu app (thisApp.cart). Dzieki temu, obiekt Cart bedzie dostepny w innych czesciach aplikacji i bedzie mozna korzystac z jego funkcjonalnosci.
+      const cartElem = document.querySelector(select.containerOf.cart);
+      thisApp.cart = new Cart(cartElem);
+    },
   };
 
-  
   app.init();
 }
