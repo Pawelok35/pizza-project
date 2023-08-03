@@ -71,8 +71,7 @@
       defaultValue: 1,
       defaultMin: 1,
       defaultMax: 9,
-    }, // CODE CHANGED
-    // CODE ADDED START
+    },
     cart: {
       defaultDeliveryFee: 20,
     },
@@ -98,14 +97,13 @@
 
   class Product {
     constructor(id, data) {
-      const thisProduct = this; // odniesienie do bierzacej instancji klasy
+      const thisProduct = this;
 
-      //Przypisanie argumentow konstruktora do wlasciwosci obiektu this.Product
       thisProduct.id = id;
       thisProduct.data = data;
       thisProduct.name = data.name;
-      thisProduct.amount = 1; // Ustawienie początkowej ilości produktu na 1
-      thisProduct.priceSingle = data.price; // Przechowanie ceny jednostkowej produktu
+      thisProduct.amount = 1;
+      thisProduct.priceSingle = data.price;
 
       thisProduct.renderInMenu();
       thisProduct.getElements();
@@ -118,59 +116,40 @@
     renderInMenu() {
       const thisProduct = this;
 
-      //a. Znajduje wybrany kod HTML
-      const generatedHTML = templates.menuProduct(thisProduct.data); // Uzycie wlasciwosci('menuProduct') obiektu 'templates' w ktorej argumentem jest 'thisProduct.data'-> Przy wywolaniu 'templates.menuProduct' przekazuje dane z obiektu 'thisProduct.data' jako ARGUMENT |
-      //kompilacja szablonu Handlebars 'menuProduct' podajac mu dane z obiektu 'thisProduct.data'w wyniku otrzymuje WYGENEROWANY KOD HTML dla danego produktu ktory jest PRZECHOWYWANY W ZMIENNEJ 'generatedHTML'
-
-      //b.  Kod HTML z punktu wyzej konwerteruje na element DOM czyli obiekt JS
-      thisProduct.element = utils.createDOMFromHTML(generatedHTML); // tworze wlasciwosc 'element' dla bierzacej instancji klasy za pomoca funkcji utilis w ktorej argumentem jest 'generatedHTML' | wygenerowany kod HTML jest zamieniany przez funkcje utilis... na element DOM czyli obiekt JS i jest przechowywany we wlasciwosci obiektu thisProduct - thisProduct.element
-
-      //c. szukam w document kontenera menu
-      const menuContainer = document.querySelector(select.containerOf.menu); // uzywajac metody document... znajduje element na stronie HTML ktory jest okreslony przez selector: select.containerOf.menu.
-      //selector ten odnosi sie do kontenera menu w ktorym chce wyswietlic produkty. selector zapisany w stalej select.
-
-      //d. dodaje na koniec kontenera menu (ktory znalazlem wyzej) (jako dziecko/child) z konwertowany kod HTML na element DOM (z punktu wyzej)
-      menuContainer.appendChild(thisProduct.element); //wywoluje metode appendChild na elemencie menuContainer, dodaje wygenerowany element produktu(thisProduct.element) na koncu do kontenera 'menuContainer'
-      //kod znajduje odpowiedni kontener menu na stronie, a nastepnie dodaje do niego wygenerowany element produktu, ktory zostal wczesniej utworzony i przechowywany w thisProduct.element. Dzieki temu produkt jest wyswietlany w menu i jest gotowy do interakcji z uzytkownikiem.
+      const generatedHTML = templates.menuProduct(thisProduct.data);
+      thisProduct.element = utils.createDOMFromHTML(generatedHTML);
+      const menuContainer = document.querySelector(select.containerOf.menu);
+      menuContainer.appendChild(thisProduct.element);
     }
 
     getElements() {
-      const thisProduct = this; // umozliwia to odwolanie sie do biezacej instancji uzywajac krotszej nazwy 'thisProduct'
-
-      //a. tworzenie wlasciowsci INSTANCJI klasy Product - argumenty przekazywane do konstruktora podczas tworzenia instancji
+      const thisProduct = this;
       thisProduct.accordionTrigger = thisProduct.element.querySelector(
-        //accordionTrigger - wlasciwosc obiektu 'thisProduct' i = przypisana do niej wartosc ktora jest wyszukiwana za pomoca querySelector w obrebie thisProduct.element
-        select.menuProduct.clickable // selektor ktory odnosi sie do odpowiedniego elementu (np. przycisk lub naglowek produktu), ktory pozwala na rozwijanie i zwijanie informacji na temat produktu.
+        select.menuProduct.clickable
       );
 
-      //b. wewnatrz thisProduct.element wyszukuje za pomoca selektora...
       thisProduct.form = thisProduct.element.querySelector(
-        select.menuProduct.form // selektor wyszukujacy i wskazuje na element HTML np formularza produktu
+        select.menuProduct.form
       );
 
-      //c. wskazanie wszystkich inputow i selectow w formularzu (thisProduct.form)
       thisProduct.formInputs = thisProduct.form.querySelectorAll(
         select.all.formInputs
       );
 
-      //d. wyszukanie w thisProduct.element selectora odpowiedzialnego za button
       thisProduct.cartButton = thisProduct.element.querySelector(
-        select.menuProduct.cartButton // wskazuje na przycisk koszyka
+        select.menuProduct.cartButton
       );
 
-      //e. tworze wlasciwosc w ktorej przechowuje element DOM znaleziony w obrebie thisProduct.element
       thisProduct.priceElem = thisProduct.element.querySelector(
-        select.menuProduct.priceElem // wyswietla cene produktuna stronie
+        select.menuProduct.priceElem
       );
 
-      //f. tworze wlasciwosc w ktorej przechowuje element DOM znaleziony w obrebie thisProduct.element
       thisProduct.imageWrapper = thisProduct.element.querySelector(
-        select.menuProduct.imageWrapper // reprezentuje kontener do obrazow produktu
+        select.menuProduct.imageWrapper
       );
 
-      //g. tworze wlasciwosc w ktorej przechowuje element DOM znaleziony w obrebie thisProduct.element
       thisProduct.amountWidgetElem = thisProduct.element.querySelector(
-        select.menuProduct.amountWidget // reprezentuje widget ilosci produktu
+        select.menuProduct.amountWidget
       );
     }
 
@@ -200,115 +179,83 @@
       const thisProduct = this;
 
       thisProduct.form.addEventListener('submit', function (event) {
-        // Dodanie nasluchu na zdarzenie submit na elemencie this.Product (formularz)
-        // Gdy uzytkownik nacisnie button submit funkcja obslugi zdarzenia zostaje wywolana
-        event.preventDefault(); // funkcja zapobiega domyslnej akcji (przeslanie danych do serwera) bo chce aby dane z formularza byly przetwarzane wewnatrz aplikacji i odpowiednio aktualizowaly koszyk lub zamowienie.
-        thisProduct.processOrder(); // wywolanie metody ktora jest odpowiedzialna za przetworzenie
+        event.preventDefault();
+        thisProduct.processOrder();
       });
 
       for (let input of thisProduct.formInputs) {
-        //petla iteruje po wszystkich elementach formularza danego productu .formInputs to inputy uzytkownika oraz checkbox i radio
         input.addEventListener('change', function () {
-          // ustawienie nasluchu na zdarzenie change na elemencie input -> kiedy uzytkownik zmieni wartosc wybranego inputu zostanie wywolana funkcja ktora ...
-          thisProduct.processOrder(); // wywoluje metode processOrder co powoduje ponowne przeliczenie zamowienia
+          thisProduct.processOrder();
         });
       }
 
       thisProduct.cartButton.addEventListener('click', function (event) {
-        // ustawienie nasluchu na zdarzenie click na elemencie thisProduct.cartButton i zapisanie zdarzenia w event
-        event.preventDefault(); // domyslna akcja to wyslanie dancyh formularza lub przeniesienie do innej strony . Klikniecie obsluguje za pomoca JS a nie chce przekierowania na inna strone .
-        thisProduct.processOrder(); // Po zatrzymaniu domnyslnej akcji nastepuje wywolanie metody processOrder()
+        event.preventDefault();
+        thisProduct.processOrder();
         thisProduct.addToCart();
       });
     }
 
-    //6.  WYWOLANIE METODY ktora przetwarza zamowienie produktu, czyli oblicza cene, wybrane opcje itp.
     processOrder() {
       const thisProduct = this;
-      //console.log(thisProduct);
 
-      // covert form to object structure e.g. { sauce: ['tomato'], toppings: ['olives', 'redPeppers']}
       const formData = utils.serializeFormToObject(thisProduct.form);
-      //console.log('formData', formData);
 
-      // set price to default price
       let price = thisProduct.data.price;
 
-      // for every category (param)...
       for (let paramId in thisProduct.data.params) {
-        // determine param value, e.g. paramId = 'toppings', param = { label: 'Toppings', type: 'checkboxes'... }
         const param = thisProduct.data.params[paramId];
-        //console.log(paramId, param);
 
-        // for every option in this category
         for (let optionId in param.options) {
-          // determine option value, e.g. optionId = 'olives', option = { label: 'Olives', price: 2, default: true }
           const option = param.options[optionId];
-          //console.log(optionId, option);
-
-          // check if there is param with a name of paramId in formData and if it includes optionId
 
           const optionSelected =
             formData[paramId] && formData[paramId].includes(optionId);
 
           if (optionSelected) {
-            //obliczanie ceny jednostkowej i aktualizacje jej w thisProduct
-            // check if the option is not default
             if (!option.default) {
               price += option.price;
-              // add option price to price variable
             }
           } else {
-            // check if the option is default
             if (option.default == true) {
               price -= option.price;
-              // reduce price variable
             }
           }
           thisProduct.priceSingle = price;
 
           const optionImage = thisProduct.imageWrapper.querySelector(
-            `.${paramId}-${optionId}` // searching image elements by class - class = paramId-optionId "toppings-olives"
+            `.${paramId}-${optionId}`
           );
           if (optionImage) {
-            //if optionImagine was found,
             if (optionSelected) {
-              // check if option was chosen
-              // if YES add class to optionImage
               optionImage.classList.add(classNames.menuProduct.imageVisible);
             } else {
-              // if NO remove class from optionImage
               optionImage.classList.remove(classNames.menuProduct.imageVisible);
             }
           }
         }
       }
 
-      // update calculated price in the HTML
       price *= thisProduct.amountWidget.value;
       thisProduct.priceElem.innerHTML = price;
     }
 
-    //7.  Metoda ktora INICJALIZUJE widget do wybierania ilosci produktu. Widget ten moze umozliwiac uzytkownikowi wybieranie liczby sztuk produktu, jakie chce zamowic.
     initAmountWidget() {
       const thisProduct = this;
 
-      thisProduct.amountWidget = new AmountWidget(thisProduct.amountWidgetElem); // tworze NOWA INSTANCJE KLASY  AmountWidget i argumentem konstruktora (klasy) jest element thisProduct.amountWidgetElem (z metody getElements reprezentuje widget do wyboru ilosci dla tego konkretnego produktu.)
+      thisProduct.amountWidget = new AmountWidget(thisProduct.amountWidgetElem);
 
       thisProduct.amountWidgetElem.addEventListener('updated', function () {
-        // Na obiekcie thisProduct o wlasciwosci amountWidgetElem ustawiam nasluch na zdarzenie update. Jezeli uzytkownik zmieni ilosc produktu to zadziala update i...
-        thisProduct.processOrder(); // ... i wywola metode processOrder() ktora jest odpwiedzialna za przetwarzanie zamowienia np oblicza cene.
+        thisProduct.processOrder();
       });
     }
 
-    //8.
     addToCart() {
       const thisProduct = this;
       const productSummary = thisProduct.prepareCartProduct();
-      app.cart.add(productSummary); // Przekazujemy podsumowanie produktu do metody cart.add
+      app.cart.add(productSummary);
     }
 
-    //9.
     prepareCartProduct() {
       const thisProduct = this;
       thisProduct.name = thisProduct.data.name;
@@ -324,31 +271,25 @@
       };
       return productSummary;
     }
-
-    //10. podsumowanie wszystkich wybranych opcji
     prepareCartProductParams() {
       const thisProduct = this;
-      const formData = utils.serializeFormToObject(thisProduct.form); // Pobieram dane z formularza produktu i przeksztalcam n a obiekt JS (za pomoca funkcji)
-      const params = {}; // obiekt ktory zawiera podsumowanie wybranych opcji dla produktu.
+      const formData = utils.serializeFormToObject(thisProduct.form);
+      const params = {};
 
       for (let paramId in thisProduct.data.params) {
-        // Petla iterujaca przez wszystkie kategorie(parametry) produktu.
         const param = thisProduct.data.params[paramId];
 
         params[paramId] = {
-          // Tworze kategorie parametru w obiekcie params
           label: param.label,
           options: {},
         };
 
         for (let optionId in param.options) {
-          //dla kazdej opcji w tej kategorii
           const option = param.options[optionId];
           const optionSelected =
             formData[paramId] && formData[paramId].includes(optionId);
 
           if (optionSelected) {
-            //opcja jest wybrana i dodaje ja do obiektuz podsumowaniem
             params[paramId].options[optionId] = option.label;
           }
         }
@@ -387,42 +328,36 @@
     }
 
     setValue(value) {
-      const thisWidget = this; // zmienna lokalna ktora odnosi sie do biezacej instacji klasy AmountWidget
+      const thisWidget = this;
 
-      const newValue = parseInt(value); // do zmiennej newValue przypisuje konwersje przekazana wartosc value na liczbe całkowita za pomoca funkcji parseInt(). Wartosc ta będzie reprezentowac nowa wartosc liczby, ktora chce ustawic dla widgetu liczby.
+      const newValue = parseInt(value);
 
       if (thisWidget.value !== newValue && !isNaN(newValue)) {
-        // Warunek sprawdza, czy nowa wartosc newValue rozni się od biezacej wartosci widgetu thisWidget.value, oraz czy newValue jest liczba (czy nie jest NaN - "Not a Number").
-        // NaN not a number
-
         if (
-          newValue >= settings.amountWidget.defaultMin && // Sprawdzam czy newValue miesci sie w zakresie zdefiniowanym w settings.amountWidget.defaultMin
+          newValue >= settings.amountWidget.defaultMin &&
           newValue <= settings.amountWidget.defaultMax
         ) {
-          thisWidget.value = newValue; // jesli tak to przypisuje newValue do wlasciwosci yhisWidget.value/ w ten sposob zapobiegam ustawieniu wartosci poza okreslonym zakresem.
+          thisWidget.value = newValue;
         }
       }
 
-      thisWidget.input.value = thisWidget.value; // Ustawiam wartosc pola input wewnatrz widgetu liczby na thisWidget.value. Dzieki temu, po zmianie wartosci, pole input zostanie zaktualizowane, aby odzwierciedlac biezaca wartosc widgetu.
-      thisWidget.announce(); //  Wywołuje metode announce() klasy AmountWidget, ktora ma za zadanie poinformować innych, ze wartosc widgetu zostala zmieniona.
+      thisWidget.input.value = thisWidget.value;
+      thisWidget.announce();
     }
 
     initAction() {
       const thisWidget = this;
 
       thisWidget.input.addEventListener('change', function () {
-        // Na wyszukanym elemencie thisWidget.input dodaje nasluch na zdarzenie 'change' Kiedy nastapi zdarzenie to wywolywana jest funkcja anonimowa ktora wywola metode setValue(this.value). Oznacza to, ze nowa wartosc wpisana przez uzytkownika zostanie ustawiona jako nowa wartosc widgetu liczby.
         thisWidget.setValue(this.value);
       });
 
       thisWidget.linkDecrease.addEventListener('click', function (event) {
-        // Wartosc widgetu liczby zostanie zmniejszony o -1
         event.preventDefault();
         thisWidget.setValue(thisWidget.value - 1);
       });
 
       thisWidget.linkIncrease.addEventListener('click', function (event) {
-        // Wartosc widgetu liczby zostanie zwiekszony o +1
         event.preventDefault();
         thisWidget.setValue(thisWidget.value + 1);
       });
@@ -503,9 +438,7 @@
       thisCart.dom.totalNumber = thisCart.dom.wrapper.querySelector(
         select.cart.totalNumber
       );
-      thisCart.dom.form = thisCart.dom.wrapper.querySelector(
-        select.cart.form
-      );
+      thisCart.dom.form = thisCart.dom.wrapper.querySelector(select.cart.form);
     }
 
     initActions() {
@@ -533,8 +466,7 @@
       thisCart.dom.form.addEventListener('submit', function (event) {
         event.preventDefault(); // Blokujemy domyślne zachowanie formularza (przeładowanie strony)
 
-        thisCart.sendOrder(); 
-        
+        thisCart.sendOrder();
       });
     }
 
@@ -549,35 +481,33 @@
         totalNumber: thisCart.totalNumber,
         deliveryFee: thisCart.deliveryFee,
         products: [],
+      };
+      for (let prod of thisCart.products) {
+        payload.products.push(prod.getData());
+      }
+
+      for (const cartProduct of thisCart.products) {
+        const productData = cartProduct.getData(); // Pobierz dane produktu z koszyka
+        payload.products.push(productData); // Dodaj dane produktu do listy produktów w zamówieniu
+      }
+      const options = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload), // Wyślij dane zamówienia jako JSON
+      };
+      console.log('Payload:', payload);
+
+      // Wysłanie zamówienia na serwer za pomocą zapytania POST
+      fetch(url, options)
+        .then(function (response) {
+          return response.json();
+        })
+        .then(function (parsedResponse) {
+          console.log('parsedResponse', parsedResponse);
+        });
     }
-    for(let prod of thisCart.products) {
-      payload.products.push(prod.getData());
-    }
-    
-    for (const cartProduct of thisCart.products) {
-      const productData = cartProduct.getData(); // Pobierz dane produktu z koszyka
-      payload.products.push(productData); // Dodaj dane produktu do listy produktów w zamówieniu
-    }
-    const options = {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(payload), // Wyślij dane zamówienia jako JSON
-    };
-    console.log('Payload:', payload);
-
-    // Wysłanie zamówienia na serwer za pomocą zapytania POST
-    fetch(url, options)
-    .then(function(response){
-      return response.json();
-    }) .then(function(parsedResponse){
-      console.log('parsedResponse', parsedResponse);
-    });
-  }
-
-
-
 
     add(menuProduct) {
       const thisCart = this;
@@ -610,11 +540,9 @@
 
   class CartProduct {
     constructor(menuProduct, element) {
-      // Zapisujemy referencję do obiektu this
       const thisCartProduct = this;
-      this.amount = 1; // Domyślna ilość sztuk produktu
+      this.amount = 1;
       this.price = this.priceSingle;
-     
 
       thisCartProduct.id = menuProduct.id;
       thisCartProduct.name = menuProduct.name;
@@ -622,12 +550,9 @@
       thisCartProduct.priceSingle = menuProduct.priceSingle;
       thisCartProduct.amount = menuProduct.amount;
 
-      // Wywołujemy metodę getElements, przekazując jej argument element
       thisCartProduct.getElements(element);
       thisCartProduct.initAmountWidget();
       thisCartProduct.initActions();
-      // Wyświetlamy thisCartProduct w konsoli
-      //console.log(thisCartProduct);
     }
     getElements(element) {
       const thisCartProduct = this;
@@ -649,14 +574,14 @@
 
       thisCartProduct.amountWidget = new AmountWidget(
         thisCartProduct.dom.amountWidget
-      ); // Tworzymy instancję klasy AmountWidget przekazując odpowiedni element HTML
+      );
 
       thisCartProduct.dom.amountWidget.addEventListener('updated', function () {
-        thisCartProduct.amount = thisCartProduct.amountWidget.value; // Aktualizujemy właściwość amount na podstawie wartości widgetu liczby sztuk
+        thisCartProduct.amount = thisCartProduct.amountWidget.value;
         thisCartProduct.price =
-          thisCartProduct.priceSingle * thisCartProduct.amount; // Aktualizujemy cenę na podstawie ceny pojedynczej sztuki i ilości sztuk
-        thisCartProduct.dom.price.innerHTML = thisCartProduct.price; // Aktualizujemy cenę na stronie, w odpowiednim elemencie HTML
-        app.cart.update(); // Aktualizujemy cały koszyk, żeby uwzględnić zmiany w cenie tego produktu
+          thisCartProduct.priceSingle * thisCartProduct.amount;
+        thisCartProduct.dom.price.innerHTML = thisCartProduct.price;
+        app.cart.update();
       });
     }
     updatePrice() {
@@ -678,16 +603,13 @@
     initActions() {
       const thisCartProduct = this;
 
-      // Listener dla guzika 'remove'
       thisCartProduct.dom.remove.addEventListener('click', function (event) {
         event.preventDefault();
         thisCartProduct.remove();
       });
 
-      // Listener dla guzika 'edit'
       thisCartProduct.dom.edit.addEventListener('click', function (event) {
         event.preventDefault();
-        // Tu możesz dodać odpowiednią funkcjonalność dla guzika 'edit'
       });
     }
 
@@ -698,17 +620,14 @@
         price: this.price,
         priceSingle: this.priceSingle,
         name: this.name,
-        
       };
-  
+
       return data;
-  }
+    }
   }
   const app = {
-    // 20. Metoda odpowiedzialna za inicjacje menu aplikacji a konkretnie tworzenie produktow na podstawie danych znajdujacych sie w thisApp.data.products.
     initMenu: function () {
-      const thisApp = this; // Tworze lokalna zmienna thisApp, ktora przechowuje referencje do obiektu app
-      //console.log('thisApp.data:', thisApp.data);
+      const thisApp = this;
       for (let productData in thisApp.data.products) {
         // w pętli iteruje przez wszystkie produkty znajdujace sie w thisApp.data.products. Dla kazdego produktu wykonuje sie następujące czynności:
         new Product(
@@ -728,9 +647,9 @@
           return rawResponse.json();
         })
         .then(function (parsedResponse) {
-          thisApp.data.products = parsedResponse; // zmiana na obiekt products z właściwością "id"
+          thisApp.data.products = parsedResponse;
           console.log('parsedResponse', thisApp.data.products);
-          thisApp.initMenu(); // Wywołujemy init
+          thisApp.initMenu();
           console.log('parsedResponse', parsedResponse);
         });
       console.log('thisApp.data', JSON.stringify(thisApp.data));

@@ -279,8 +279,8 @@
       "id": 3
     },
     {
-      "address": "ssss",
-      "phone": "3333",
+      "address": "",
+      "phone": "",
       "totalPrice": 29,
       "subtotalPrice": 9,
       "totalNumber": 1,
@@ -304,8 +304,8 @@
       "id": 4
     },
     {
-      "address": "ssss",
-      "phone": "3333",
+      "address": "",
+      "phone": "",
       "totalPrice": 29,
       "subtotalPrice": 9,
       "totalNumber": 1,
@@ -327,6 +327,31 @@
         }
       ],
       "id": 5
+    },
+    {
+      "address": "",
+      "phone": "",
+      "totalPrice": 29,
+      "subtotalPrice": 9,
+      "totalNumber": 1,
+      "deliveryFee": 20,
+      "products": [
+        {
+          "id": "cake",
+          "amount": 1,
+          "price": 9,
+          "priceSingle": 9,
+          "name": "Zio Stefano's Doughnut"
+        },
+        {
+          "id": "cake",
+          "amount": 1,
+          "price": 9,
+          "priceSingle": 9,
+          "name": "Zio Stefano's Doughnut"
+        }
+      ],
+      "id": 6
     }
   ]
 }
