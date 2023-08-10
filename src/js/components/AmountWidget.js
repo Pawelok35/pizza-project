@@ -3,10 +3,10 @@ import { select, settings } from "../settings.js";
 class AmountWidget {
     constructor(element) {
       const thisWidget = this;
+     
       thisWidget.getElements(element);
-
       thisWidget.setValue(
-        thisWidget.input.value || settings.amountWidget.defaultValue
+      thisWidget.input.value || settings.amountWidget.defaultValue
       );
       thisWidget.initActions();
 
@@ -15,6 +15,7 @@ class AmountWidget {
       const thisWidget = this;
 
       thisWidget.element = element;
+
       thisWidget.input = thisWidget.element.querySelector(
         select.widgets.amount.input
       );
@@ -74,4 +75,4 @@ class AmountWidget {
     }
   }
 
-  export default AmountWidget
+  export default AmountWidget;

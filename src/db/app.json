@@ -1,5 +1,5 @@
 {
-    "products":[
+    "product":[
        {
           "id":"cake",
           "class":"small",
@@ -202,9 +202,7 @@
           }
        }
     ],
-    
     "orders": [],
-
     "events": [
       {
         "id": 1,
@@ -258,5 +256,4 @@
       }
     ],
     "bookings": []
-   
  }
