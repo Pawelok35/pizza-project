@@ -4,6 +4,7 @@ import Cart from './components/Cart.js';
 import Booking from './components/Booking.js';
 
 const app = {
+
   initPages: function () {
     const thisApp = this;
 
@@ -88,9 +89,10 @@ const app = {
         thisApp.data.products = parsedResponse;
 
         thisApp.initMenu();
+        
       });
 
-    console.log('thisApp.data', JSON.stringify(thisApp.data));
+    
   },
 
   initCart: function () {
@@ -109,7 +111,7 @@ const app = {
 const thisApp = this;
 
 const bookingElement = document.querySelector(select.containerOf.booking);
-thisApp.booking = new Booking(bookingElement);  
+thisApp.booking = new Booking(bookingElement)  
 },
 
   init: function () {

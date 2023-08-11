@@ -41,9 +41,9 @@ class Booking {
         thisBooking.updateDOM();
       });
   
-      thisBooking.dom.sendButton.addEventListener('submit', function (event) {
-        event.preventDefault();
-        thisBooking.sendBooking();
+      thisBooking.dom.sendButton.addEventListener('submit', function () {
+     
+     
       });
   
       thisBooking.element.addEventListener('click', function () {});
