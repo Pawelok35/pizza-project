@@ -21,7 +21,7 @@ class Booking {
     const bookingContainer = document.querySelector(select.containerOf.booking);
     /* add element to menu */
     bookingContainer.appendChild(thisBooking.element).innerHTML;
-    
+
     thisBooking.dom = {};
     thisBooking.dom.wrapper = element;
 
@@ -41,16 +41,7 @@ class Booking {
     );
     thisBooking.hoursAmountElem = new AmountWidget(thisBooking.dom.hoursAmount);
 
-    thisBooking.dom.wrapper.addEventListener('updated', function () {
-        thisBooking.updateDOM();
-      });
-  
-      thisBooking.dom.sendButton.addEventListener('submit', function () {
-     
-     
-      });
-  
-      thisBooking.element.addEventListener('click', function () {});
+ 
   }
 }
 export default Booking;
