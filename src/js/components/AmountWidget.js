@@ -68,7 +68,7 @@ class AmountWidget {
       });
     }
 
-    announce() {
+   announce() {
       const thisWidget = this;
 
       const event = new CustomEvent('updated', {
