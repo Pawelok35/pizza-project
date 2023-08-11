@@ -115,7 +115,7 @@ class Cart {
     sendOrder() {
       const thisCart = this;
 
-      const url = settings.db.url + '/' + settings.db.orders;
+      const url = settings.db.url + '/' + settings.db.order;
 
       const payload = {
         address: thisCart.dom.address.value,
@@ -139,7 +139,7 @@ class Cart {
         body: JSON.stringify(payload),
       };
 
-      fetch(url, options);
+     fetch(url, options);
     }
   }
 
