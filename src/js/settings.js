@@ -43,11 +43,14 @@ export const select = {
     peopleAmount: '.people-amount',
     hoursAmount: '.hours-amount',
     tables: '.floor-plan .table',
+    formSubmit: '.booking-form',
+    address: '[name="address"]',
+    phone: '[name="phone"]',
+    starter: '.checkbox',
   },
   nav: {
     links: '.main-nav a',
   },
-
   // CODE ADDED START
   cart: {
     productList: '.cart__order-summary',
@@ -68,19 +71,17 @@ export const select = {
     edit: '[href="#edit"]',
     remove: '[href="#remove"]',
   },
+  // CODE ADDED END
 };
 export const classNames = {
   menuProduct: {
     wrapperActive: 'active',
     imageVisible: 'active',
   },
-
-  cart: {
-    wrapperActive: 'active',
-  },
   booking: {
     loading: 'loading',
     tableBooked: 'booked',
+    tableClicked: 'clicked',
   },
   nav: {
     active: 'active',
@@ -88,6 +89,11 @@ export const classNames = {
   pages: {
     active: 'active',
   },
+  // CODE ADDED START
+  cart: {
+    wrapperActive: 'active',
+  },
+  // CODE ADDED END
 };
 
 export const settings = {
@@ -96,46 +102,46 @@ export const settings = {
     defaultMin: 0,
     defaultMax: 10,
   },
-
+  // CODE ADDED START
   cart: {
     defaultDeliveryFee: 20,
   },
-
-  db: {
-    url: '//localhost:3131',
-        product: 'products',
-        order: 'orders',
-        booking: 'bookings',
-        event: 'events',
-        dateStartParamKey: 'date_gte',
-        dateEndParamKey: 'date_lte',
-        notRepeatParam: 'repeat=false',
-        repeatParam: 'repeat_ne=false',
-
-  },
+  // CODE ADDED END
   hours: {
     open: 12,
     close: 24,
-},
-datePicker: {
+  },
+  datePicker: {
     maxDaysInFuture: 14,
-},
-booking: {
+  },
+  booking: {
     tableIdAttribute: 'data-table',
-},
-
-  
-  
+  },
+  db: {
+    url: '//localhost:3131',
+    product: 'products',
+    order: 'orders',
+    booking: 'bookings',
+    event: 'events',
+    dateStartParamKey: 'date_gte',
+    dateEndParamKey: 'date_lte',
+    notRepeatParam: 'repeat=false',
+    repeatParam: 'repeat_ne=false',
+  },
 };
 
 export const templates = {
   menuProduct: Handlebars.compile(
     document.querySelector(select.templateOf.menuProduct).innerHTML
   ),
-
+  // CODE ADDED START
   cartProduct: Handlebars.compile(
     document.querySelector(select.templateOf.cartProduct).innerHTML
   ),
-
-  bookingWidget: Handlebars.compile(document.querySelector(select.templateOf.bookingWidget).innerHTML),
+  // CODE ADDED END
+  bookingWidget: Handlebars.compile(
+    document.querySelector(select.templateOf.bookingWidget).innerHTML
+  ),
 };
+
+export default settings;
