@@ -12,19 +12,16 @@ class Booking {
     thisBooking.initWidgets();
     thisBooking.getData();
     thisBooking.tableSelect();
-    //console.log('new Cart', thisCart);
   }
 
   render(element) {
     const thisBooking = this;
-
-    /* generate HTML based on template */
     const generatedHTML = templates.bookingWidget();
-    /* create element using utils.createElementFromHTML */
+
     thisBooking.element = utils.createDOMFromHTML(generatedHTML);
-    /* find menu container */
+
     const bookingContainer = document.querySelector(select.containerOf.booking);
-    /* add element to menu */
+
     bookingContainer.appendChild(thisBooking.element);
 
     thisBooking.dom = {};
@@ -258,12 +255,13 @@ class Booking {
     const thisBooking = this;
 
     thisBooking.element.addEventListener('click', function (event) {
+      //event.preventDefault();
+
       const clickedElement = event.target;
       const table = clickedElement.getAttribute(
         settings.booking.tableIdAttribute
       );
       let tableId = '';
-
       if (table != null) {
         if (
           !clickedElement.classList.contains(classNames.booking.tableBooked)
@@ -328,6 +326,7 @@ class Booking {
 
     fetch(url, options);
     thisBooking.updateDOM();
+    console.log(thisBooking.booked);
   }
 }
 

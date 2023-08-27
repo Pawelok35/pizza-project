@@ -2,6 +2,7 @@ import { settings, select, classNames } from './settings.js';
 import Product from './components/Product.js';
 import Cart from './components/Cart.js';
 import Booking from './components/Booking.js';
+import HomePage from './components/HomePage.js';
 
 const app = {
   initPages: function () {
@@ -9,7 +10,6 @@ const app = {
 
     thisApp.pages = document.querySelector(select.containerOf.pages).children;
     thisApp.navLinks = document.querySelectorAll(select.nav.links);
-
     const idFromHash = window.location.hash.replace('#/', '');
 
     let pageMatchingHash = thisApp.pages[0].id;
@@ -28,15 +28,9 @@ const app = {
         const clickedElement = this;
         event.preventDefault();
 
-        /*  get page id from href attribute*/
-
         const id = clickedElement.getAttribute('href').replace('#', '');
 
-        /* run thisApp.activatePage with that id */
-
         thisApp.activatePage(id);
-
-        /* change URL hash*/
 
         window.location.hash = '#/' + id;
       });
@@ -49,6 +43,13 @@ const app = {
     const bookingElement = document.querySelector(select.containerOf.booking);
 
     thisApp.booking = new Booking(bookingElement);
+  },
+  initHome: function () {
+    const thisApp = this;
+
+    const homeElement = document.querySelector(select.containerOf.homePage);
+
+    thisApp.homePage = new HomePage(homeElement);
   },
 
   activatePage: function (pageId) {
@@ -88,8 +89,6 @@ const app = {
         return rawResponse.json();
       })
       .then(function (parsedResponse) {
-        //console.log('parsedResponse', parsedResponse);
-
         thisApp.data.products = parsedResponse;
 
         thisApp.initMenu();
@@ -116,6 +115,7 @@ const app = {
     thisApp.initCart();
     thisApp.initPages();
     thisApp.initBooking();
+    thisApp.initHome();
   },
 };
 
